@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="L6Lm9d5Crl">
+  
+  
+  
+  
+  <title>Git 中级用户的25个提示 | ibrucekong</title>
+  <meta name="keywords" content="ibrucekong,Bruce Kong,Bruce">
+  <meta name="description" content="一个坚持在Code上的少年，就算前面是风雨，也会努力拼搏，迎接彩虹！">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta baidu-gxt-verify-token="d38209b74c2782fdf74a2140c3c46e3b">
+  <meta name="description" content="超级好用的版本管理系统： Git是一款免费、开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。">
+<meta name="keywords" content="版本管理,Git">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git 中级用户的25个提示">
+<meta property="og:url" content="http://ibrucekong.github.io/posts/2220897336/index.html">
+<meta property="og:site_name" content="ibrucekong">
+<meta property="og:description" content="超级好用的版本管理系统： Git是一款免费、开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/git-log.jpg">
+<meta property="og:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+<meta property="og:updated_time" content="2015-08-28T01:22:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Git 中级用户的25个提示">
+<meta name="twitter:description" content="超级好用的版本管理系统： Git是一款免费、开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。">
+<meta name="twitter:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/git-log.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="ibrucekong" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <script src="/js/love.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+    
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+      console.log("Welcome to Bruce's world!——欢迎来到Bruce的世界！");
+      console.log("主页请访问：http://ibrucekong.github.io");
+  </script>
+  <script type="hidden" src="https://s4.cnzz.com/z_stat.php?id=1256273509&web_id=1256273509" language="JavaScript"></script>
+  <style>
+		body{
+			cursor:url('/mouse/arrow.cur'),auto;
+		}
+		a{
+			cursor: url('/mouse/hand.cur'),auto;
+		}
+	</style>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <script src="/js/jjquery.js"></script>
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">ibrucekong</a></h1>
+        </hgroup>
+        
+        <p class="header-subtitle">JUST DO IT</p>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder=" Search...">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives/index.html">所有文章</a></li>
+                        
+                            <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                        
+                            <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                        
+                            <li><a href="/categories/tips/index.html">学习心得</a></li>
+                        
+                            <li><a href="/about/index.html">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                            
+                                <a class="fl weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/3D-Map/" style="font-size: 10px;">3D Map</a> <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/BIM/" style="font-size: 15px;">BIM</a> <a href="/tags/BIMserver/" style="font-size: 15px;">BIMserver</a> <a href="/tags/BeautifulSoup/" style="font-size: 10px;">BeautifulSoup</a> <a href="/tags/Blog/" style="font-size: 15px;">Blog</a> <a href="/tags/Cesium/" style="font-size: 10px;">Cesium</a> <a href="/tags/Chrome/" style="font-size: 15px;">Chrome</a> <a href="/tags/GIS/" style="font-size: 15px;">GIS</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/Hexo/" style="font-size: 15px;">Hexo</a> <a href="/tags/IE/" style="font-size: 10px;">IE</a> <a href="/tags/Ionic/" style="font-size: 15px;">Ionic</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/Nginx/" style="font-size: 15px;">Nginx</a> <a href="/tags/Node/" style="font-size: 10px;">Node</a> <a href="/tags/OpenSSL/" style="font-size: 10px;">OpenSSL</a> <a href="/tags/Pdfkit/" style="font-size: 10px;">Pdfkit</a> <a href="/tags/Python3/" style="font-size: 20px;">Python3</a> <a href="/tags/Route/" style="font-size: 10px;">Route</a> <a href="/tags/SCP/" style="font-size: 10px;">SCP</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/中秋/" style="font-size: 10px;">中秋</a> <a href="/tags/事件监听/" style="font-size: 10px;">事件监听</a> <a href="/tags/代理/" style="font-size: 15px;">代理</a> <a href="/tags/公路车/" style="font-size: 10px;">公路车</a> <a href="/tags/写作/" style="font-size: 10px;">写作</a> <a href="/tags/吾爱破解/" style="font-size: 20px;">吾爱破解</a> <a href="/tags/心得/" style="font-size: 10px;">心得</a> <a href="/tags/控制台/" style="font-size: 10px;">控制台</a> <a href="/tags/活动/" style="font-size: 20px;">活动</a> <a href="/tags/济南/" style="font-size: 10px;">济南</a> <a href="/tags/点击事件/" style="font-size: 10px;">点击事件</a> <a href="/tags/爬虫/" style="font-size: 10px;">爬虫</a> <a href="/tags/版本管理/" style="font-size: 15px;">版本管理</a> <a href="/tags/百度地图/" style="font-size: 10px;">百度地图</a> <a href="/tags/终端/" style="font-size: 10px;">终端</a> <a href="/tags/编程语言/" style="font-size: 10px;">编程语言</a> <a href="/tags/自行车/" style="font-size: 10px;">自行车</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/跳转/" style="font-size: 10px;">跳转</a>
+                    </div>
+                </section>
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://weibo.com/kongbin1246053598de">新浪</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://www.jianshu.com/users/4bd3b777695a/timeline">简书</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://blog.brucekong.com">博客</a>
+                    
+                    </div>
+                </section>
+                
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">ibrucekong</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">ibrucekong</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">JUST DO IT</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives/index.html">所有文章</a></li>
+                
+                    <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                
+                    <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                
+                    <li><a href="/categories/tips/index.html">学习心得</a></li>
+                
+                    <li><a href="/about/index.html">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                    
+                        <a class="weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-25-tips-for-git-intermediate-users" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/2220897336/" class="article-date">
+      <time datetime="2015-08-28T01:22:56.000Z" itemprop="datePublished">2015-08-28</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Git 中级用户的25个提示
+    </h1>
+  
+
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/languages/">languages</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Git/">Git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/版本管理/">版本管理</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><strong>超级好用的版本管理系统：</strong></p>
+<p>Git是一款免费、开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。</p>
+<a id="more"></a>
+<h2 id="什么是Git"><a href="#什么是Git" class="headerlink" title="什么是Git"></a>什么是Git</h2><div style="text-align: center;"><img src="https://coding.net/u/ibrucekong/p/images/git/raw/master/git-log.jpg" alt="git log"></div>
+
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Git是一款免费、开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。Git是一个开源的分布式版本控制系统，可以有效、高速的处理从很小到非常大的项目版本管理。 Git 是 Linus Torvalds 为了帮助管理Linux 内核开发而开发的一个开放源码的版本控制软件。</p>
+
+<h2 id="安装及基本知识"><a href="#安装及基本知识" class="headerlink" title="安装及基本知识"></a>安装及基本知识</h2><h3 id="安装后第一步"><a href="#安装后第一步" class="headerlink" title="安装后第一步"></a>安装后第一步</h3><p>安装 Git 之后，你要做的第一件事情就是去配置你的名字和邮箱，因为每一次提交都需要这些信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global user.name &quot;Some One&quot;</span><br><span class="line">$ git config --global user.email &quot;someone@gmail.com&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="Git是以指针为基础"><a href="#Git是以指针为基础" class="headerlink" title="Git是以指针为基础"></a>Git是以指针为基础</h3><p>存储在 git 中的所有东西都包含在一个文件中。当你提交的时候，git 会创建一个包含提交消息和相关数据的文件（名称、邮件、日期/时间、上一次提交等等），并将其链接到一个树形文件。树形文件包含一个对象列表或者其它树。对象或二进制大数据对象(<a href="http://en.wikipedia.org/wiki/Binary_large_object" target="_blank" rel="noopener">BLOB</a>)是提交的真正内容（一个文件，如果你愿意，虽然文件名没有存储在对象中，但会存储在树中）。所有这些文件都以对象的 SHA-1 哈希为文件名进行存储。</p>
+<p>分支和标签只是一些文件，这些文件包含（基本上）一个指向提交的 SHA-1 哈希值。使用这些引用在灵活性和速度上均有大幅提升，创建一个新的分支就和创建一个文件一样简单，只是这个文件带有分支名称和一个包含指向提交（你从这个提交建立分支）的SHA-1哈希值。当然，当你使用 Git 命令行工具（或一个图形用户界面）时，你永远也不会这么做，但它就是这么简单。</p>
+<p>你可能已经听说过对 HEAD 的引用。它只是一个包含 SHA-1引用的文件，这个引用指向你当前的提交。如果你正在解决一个合并冲突问题，查看一下HEAD，你会发现，它与一个特定的分支或分支上的特定点无关，只和你现在的位置有关。</p>
+<p>所有的分支指针保存在 .git/refs/heads 目录下，HEAD 在 .git/HEAD 目录下，标签在 .git/refs/tags 目录下 - 你可以随意看看。</p>
+<h3 id="两个Parents-当然！"><a href="#两个Parents-当然！" class="headerlink" title="两个Parents - 当然！"></a>两个Parents - 当然！</h3><p>当在日志文件中查看一个合并提交的消息时，你会看到两个 parents（与正常提交相比）。第一个parent 是你所在的分支，第二个 parents 是你并入的分支。</p>
+<h3 id="合并冲突"><a href="#合并冲突" class="headerlink" title="合并冲突"></a>合并冲突</h3><p>到目前为止，我确信你一定有一个合并冲突需要解决。通常情况下，通过编辑该文件，删除文件中的&lt;&lt;&lt;&lt;, ====, &gt;&gt;&gt;&gt;标记，然后保存你需要保留的代码就可以了。有时候，在任何变更之前查看代码都是一个值得推荐的做法，比如，在你对两个有冲突的分支采取行动之前。这是又一个命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ git diff --merge</span><br><span class="line">diff --cc dummy.rb  </span><br><span class="line">index 5175dde,0c65895..4a00477  </span><br><span class="line">--- a/dummy.rb</span><br><span class="line">+++ b/dummy.rb</span><br><span class="line">@@@ -1,5 -1,5 +1,5 @@@</span><br><span class="line">  class MyFoo</span><br><span class="line">    def say</span><br><span class="line">-     puts &quot;Bonjour&quot;</span><br><span class="line"> -    puts &quot;Hello world&quot;</span><br><span class="line">++    puts &quot;Annyong Haseyo&quot;</span><br><span class="line">    end</span><br><span class="line">  end</span><br></pre></td></tr></table></figure>
+<p>如果文件是二进制的，文件比较就不是那么容易了…你通常要做的是尝试每个版本的二进制文件，并决定使用哪一个（或者在二进制文件编辑器手动复制部分内容）。从一个特定分支下 pull 一个文件副本（如果你要合并主分支和分支132的话）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout master flash/foo.fla # or...</span><br><span class="line">$ git checkout feature132 flash/foo.fla</span><br><span class="line">$ # Then...</span><br><span class="line">$ git add flash/foo.fla</span><br></pre></td></tr></table></figure>
+<p>另一种方法是从 git 中查看这个文件 - 你能够以其他文件名的方式进行查看，然后将正确的文件（当你确定它是哪一个时）复制到正常的文件名中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ git show master:flash/foo.fla &gt; master-foo.fla</span><br><span class="line">$ git show feature132:flash/foo.fla &gt; feature132-foo.fla</span><br><span class="line">$ # Check out master-foo.fla and feature132-foo.fla</span><br><span class="line">$ # Let&apos;s say we decide that feature132&apos;s is correct</span><br><span class="line">$ rm flash/foo.fla</span><br><span class="line">$ mv feature132-foo.fla flash/foo.fla</span><br><span class="line">$ rm master-foo.fla</span><br><span class="line">$ git add flash/foo.fla</span><br></pre></td></tr></table></figure>
+<p>更新：感谢 Carl 在早先的的博客评论中给与的提醒，你实际上能使用 “git checkout —ours flash/foo.fla” 和 “git checkout —theirs flash/foo.fla” 检出一个特定的版本而不需要记住你要合并到哪一个分支。我个人更喜欢更明确些，但是你可以随便选择…</p>
+<p>在解决了合并冲突问题之后（就像我上面所做的那样），请记得将这个文件添加给索引。</p>
+<h2 id="服务器、分支和标签"><a href="#服务器、分支和标签" class="headerlink" title="服务器、分支和标签"></a>服务器、分支和标签</h2><h3 id="远程服务器"><a href="#远程服务器" class="headerlink" title="远程服务器"></a>远程服务器</h3><p>Git 最强大的功能之一是可以有一个以上的远程服务器（另一个事实，你总是可以运行一个本地仓库）。你不一定总是需要写访问权限，你可以从多个服务器中读取（用于合并），然后写到另一个服务器中。添加一个远程服务器很简单：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git remote add john git@github.com:johnsomeone/someproject.git</span><br></pre></td></tr></table></figure>
+<p>如果你想查看远程服务器的相关信息，你可以这样做：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># shows URLs of each remote server</span><br><span class="line">$ git remote -v </span><br><span class="line"></span><br><span class="line"># gives more details about each</span><br><span class="line">$ git remote show name</span><br></pre></td></tr></table></figure>
+<p>你可以查看本地分支和远程分支之间的差别：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git diff master..john/master</span><br></pre></td></tr></table></figure>
+<p>你也能查看不在远程分支上的 HEAD 的变化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git log remote/branch..</span><br><span class="line"># Note: no final refspec after ..</span><br></pre></td></tr></table></figure>
+<h3 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h3><p>在 Git 中存在两种类型的标签 - 一个轻量级标签和一个注解标签。记着第二个提示中说过 Git 是基于指针的，二者的区别很简单。一个轻量级标签无非是一个指向提交的具名指针。你可以改变它并指向另一个提交。一个注解标签是一个指向标签对象的具名指针，这个标签对象拥有自己的消息和历史。如果有需要，标签对象的消息可以采用 GPG 加密签名。</p>
+<p>创建两种类型的标签其实很容易（只是一个命令行选项的差异）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git tag to-be-tested</span><br><span class="line">$ git tag -a v1.1.0 # Prompts for a tag message</span><br></pre></td></tr></table></figure>
+<h3 id="创建分支"><a href="#创建分支" class="headerlink" title="创建分支"></a>创建分支</h3><p>在 Git 中创建分支非常容易（闪电般的速度，因为它仅仅需要创建一个不到100字节的文件）。创建一个新分支并切换过去的通用写法是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git branch feature132</span><br><span class="line">$ git checkout feature132</span><br></pre></td></tr></table></figure>
+<p>当然，如果你知道你要马上切换过去，你可以使用一条命令就能做到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout -b feature132</span><br></pre></td></tr></table></figure>
+<p>如果你要重命名一个本地分支，同样是件容易的事（长命令方式用来显示具体执行过程）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout -b twitter-experiment feature132</span><br><span class="line">$ git branch -d feature132</span><br></pre></td></tr></table></figure>
+<p>更新：或者你（就像 Brian Palmer 在博客文章评论中指出的那样）只使用 “git branch” 和 -m 选项就可以一步到位：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git branch -m twitter-experiment</span><br><span class="line">$ git branch -m feature132 twitter-experiment</span><br></pre></td></tr></table></figure>
+<h3 id="合并分支"><a href="#合并分支" class="headerlink" title="合并分支"></a>合并分支</h3><p>在将来某个时候，你想要合并你的变更。有两种方式可以实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout master</span><br><span class="line">$ git merge feature83 # Or...</span><br><span class="line">$ git rebase feature83</span><br></pre></td></tr></table></figure>
+<p>merge 和 rebase 的区别在于，merge 试图解决变更而且创建一个融合后的新提交，而 rebase 则试图把自你上次在其他分支上的变化，在另一个分支的 HAED 上重现。但是，在你向远程服务器推送一个分支之后，不要进行 rebase 操作 - 这会引发混淆/问题。</p>
+<p>如果你不能确定哪些分支仍然有独立的工作在进行 - 以便你能知道你需要合并哪一个分支以及删除哪些分支，git branch 命令有两个选项可以帮助实现这一点：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># Shows branches that are all merged in to your current branch</span><br><span class="line">$ git branch --merged</span><br><span class="line"></span><br><span class="line"># Shows branches that are not merged in to your current branch</span><br><span class="line">$ git branch --no-merged</span><br></pre></td></tr></table></figure>
+<h3 id="远程分支"><a href="#远程分支" class="headerlink" title="远程分支"></a>远程分支</h3><p>如果你有一个本地分支，你想让它出现在远程服务器上，你可以使用一个推送命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git push origin twitter-experiment:refs/heads/twitter-experiment</span><br><span class="line"># Where origin is our server name and twitter-experiment is the branch</span><br></pre></td></tr></table></figure>
+<p>更新：感谢 Erlend 在博客文章评论中提到的 - 这实际上和 git push origin twitter-experiment 达到的效果的一样，但是通过使用全部语法，你能看到你实际上在两端使用了不同的名字（你的本地名字可能是 add-ssl-support，而远程名字可能是 issue-1723）。</p>
+<p>如果你想删除一个远程服务器上的分支（请注意分支名称之前的冒号）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git push origin :twitter-experiment</span><br></pre></td></tr></table></figure>
+<p>如果你想显示所有远程分支的状态，你能像这样查看它们：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git remote show origin</span><br></pre></td></tr></table></figure>
+<p>这可能会列出一些服务器上曾经有过但现在已不存在的分支。如果碰到这种情况，你可以很轻松地使用如下命令从本地检出并将其删除：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git remote prune</span><br></pre></td></tr></table></figure>
+<p>最后，如果你有一个远程分支，你想在本地进行跟踪它，通常的做法是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git branch --track myfeature origin/myfeature</span><br><span class="line">$ git checkout myfeature</span><br></pre></td></tr></table></figure>
+<p>然而，如果你使用 -b 标识符去检出的话，新版的 Git 会自动建立跟踪：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout -b myfeature origin/myfeature</span><br></pre></td></tr></table></figure>
+<p><code>在临时存放区、索引和文件系统中保存内容</code></p>
+<h3 id="临时存放（Stashing）"><a href="#临时存放（Stashing）" class="headerlink" title="临时存放（Stashing）"></a>临时存放（Stashing）</h3><p>在Git中，你可以把当前的工作状态储存在一个临时的存储区域堆栈，然后重新加以利用。简单的案例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git stash # Do something...</span><br><span class="line">$ git stash pop</span><br></pre></td></tr></table></figure>
+<p>很多人推荐使用 git stash apply 来代替 “pop”，然而如果你真这么做的话，你最终得到一个长长的毫无用处的储藏清单。如果对它进行清理，“pop” 只会把它从堆栈中删除。如果你已经使用了 git stash apply ，你可以使用如下命令从堆栈中删除最后一项：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git stash drop</span><br></pre></td></tr></table></figure>
+<p>Git 会基于当前的提交消息自动创建一个注释信息。如果你更喜欢使用一个自定义的消息（因为它可能和之前的提交无关）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git stash save &quot;My stash message&quot;</span><br></pre></td></tr></table></figure>
+<p>如果你想从你的列表中（不必是最后一个）对一个特定的 stash 加以利用，你可以列出它们并像这样来使用它：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git stash list</span><br><span class="line">  stash@&#123;0&#125;: On master: Changed to German</span><br><span class="line">  stash@&#123;1&#125;: On master: Language is now Italian</span><br><span class="line">$ git stash apply stash@&#123;1&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="交互式添加"><a href="#交互式添加" class="headerlink" title="交互式添加"></a>交互式添加</h3><p>在 Subversion 的世界里，你修改文件然后只是提交有变化的文件。而在 Git 的世界里，你在提交某些文件甚至某些补丁上有更多的控制权。为了提交某些文件或者文件的某些部分，你必须进入交互模式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ git add -i</span><br><span class="line">           staged     unstaged path</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">*** Commands ***</span><br><span class="line">  1: status      2: update   3: revert   4: add untracked</span><br><span class="line">  5: patch      6: diff     7: quit     8: help</span><br><span class="line">What now&gt;</span><br></pre></td></tr></table></figure>
+<p>这会让你进入一个基于交互式命令的菜单模式。你可以使用命令的数字符号或者加亮字符（如果你开启颜色高亮显示功能的话）进入对应模式，然后就是正常输入文件数的问题了（你可以使用像1或1-4或2,4,7这样的格式）。</p>
+<p>如果你想进入修补模式（交互模式下输入‘p’或‘5’ ），你也可以直接进入那个模式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ git add -p    </span><br><span class="line">diff --git a/dummy.rb b/dummy.rb  </span><br><span class="line">index 4a00477..f856fb0 100644  </span><br><span class="line">--- a/dummy.rb</span><br><span class="line">+++ b/dummy.rb</span><br><span class="line">@@ -1,5 +1,5 @@</span><br><span class="line"> class MyFoo</span><br><span class="line">   def say</span><br><span class="line">-    puts &quot;Annyong Haseyo&quot;</span><br><span class="line">+    puts &quot;Guten Tag&quot;</span><br><span class="line">   end</span><br><span class="line"> end</span><br><span class="line">Stage this hunk [y,n,q,a,d,/,e,?]?</span><br></pre></td></tr></table></figure>
+<p>如你所见，在底部你得到一系列选项为选择去添加文件改变的部分，这个文件的所有变化等等。使用‘?’ 命令可以了解选不同选项的解释。</p>
+<h3 id="存储-从文件系统检索"><a href="#存储-从文件系统检索" class="headerlink" title="存储/从文件系统检索"></a>存储/从文件系统检索</h3><p>一些项目（例如 Git 项目自身）直接在 Git 文件系统中存储额外的文件而不必是检入文件。</p>
+<p>让我们开始在 Git 中存储一个任意文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ echo &quot;Foo&quot; | git hash-object -w --stdin</span><br><span class="line">51fc03a9bb365fae74fd2bf66517b30bf48020cb</span><br></pre></td></tr></table></figure>
+<p>此时，该文件对象已在数据库中，但是如果你不设置（一些东西）指向那个文件对象，它将被作为垃圾而回收。最简单的方法是标记它：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git tag myfile 51fc03a9bb365fae74fd2bf66517b30bf48020cb</span><br></pre></td></tr></table></figure>
+<p>既然在这里我们已经标记了 myfile。当我们需要获取该文件时，我们可以这样做：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git cat-file blob myfile</span><br></pre></td></tr></table></figure>
+<p>程序员可能经常用到的工具文件（密码、GPG 密钥、等等），不需要每次都检出到磁盘上（特别是在生产环境下），这种方法非常有效。</p>
+<h2 id="日志记录"><a href="#日志记录" class="headerlink" title="日志记录"></a>日志记录</h2><h3 id="查看日志"><a href="#查看日志" class="headerlink" title="查看日志"></a>查看日志</h3><p>如果你不使用‘git log’查看最近提交历史的话，你就不能长时间顺利地使用Git。但是，也存在一些如何更好使用它的建议。例如，你可以查看每次提交中改变的一个补丁：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git log -p</span><br></pre></td></tr></table></figure>
+<p>或者你可以只是查看一个哪些文件有所更改的概述：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git log --stat</span><br></pre></td></tr></table></figure>
+<p>你可以在一行中设置一个不错的别名，用于显示简短的提交和漂亮的带有消息的分支图（像 gitk，但在命令行上）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global alias.lol &quot;log --pretty=oneline --abbrev-commit --graph --decorate&quot;</span><br><span class="line">$ git lol</span><br><span class="line">* 4d2409a (master) Oops, meant that to be in Korean</span><br><span class="line">* 169b845 Hello world</span><br></pre></td></tr></table></figure>
+<h3 id="检索日志"><a href="#检索日志" class="headerlink" title="检索日志"></a>检索日志</h3><p>如果你想在日志中查询一个特定作者，你可以这样指定：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git log --author=Andy</span><br></pre></td></tr></table></figure>
+<p>更新：感谢 Johannes 的评论，我终于化解了一部分困惑。<br>或者如果你有一个搜索词出现在提交消息中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git log --grep=&quot;Something in the message&quot;</span><br></pre></td></tr></table></figure>
+<p>还有一个功能更强大的叫 pickaxe 的命令，它可以查找条目用来添加或删除一个特定的内容（也就是，当它第一次出现或被删除的时候）。这样你就可以知道何时增加了一行（但是如果那一行中的字符随后被改变，你将无从得知）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git log -S &quot;TODO: Check for admin status&quot;</span><br></pre></td></tr></table></figure>
+<p>如果你改变一个特定的文件会怎么样呢，例如 lib/foo.rb</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git log lib/foo.rb</span><br></pre></td></tr></table></figure>
+<p>比如说你有一个 feature/132 分支和一个 feature/145 分支，你想查看在这些分支但却不在主分支上的提交（备注：^ 代表非）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git log feature/132 feature/145 ^master</span><br></pre></td></tr></table></figure>
+<p>你也可以使用 ActiveSupport 风格的日期缩小日期范围：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git log --since=2.months.ago --until=1.day.ago</span><br></pre></td></tr></table></figure>
+<p>它默认使用 OR 模式来组合查询，但是你也可以很轻松地改为 AND 模式（如果你的查询项不止一个的话）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git log --since=2.months.ago --until=1.day.ago --author=andy -S &quot;something&quot; --all-match</span><br></pre></td></tr></table></figure>
+<h3 id="选择查看-修改的版本"><a href="#选择查看-修改的版本" class="headerlink" title="选择查看/修改的版本"></a>选择查看/修改的版本</h3><p>当引用一个修订版本时，你有许多选项可以选择，当然，这取决于你对此功能的了解程度：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ git show 12a86bc38 # By revision</span><br><span class="line">$ git show v1.0.1 # By tag</span><br><span class="line">$ git show feature132 # By branch name</span><br><span class="line">$ git show 12a86bc38^ # Parent of a commit</span><br><span class="line">$ git show 12a86bc38~2 # Grandparent of a commit</span><br><span class="line">$ git show feature132@&#123;yesterday&#125; # Time relative</span><br><span class="line">$ git show feature132@&#123;2.hours.ago&#125; # Time relative</span><br></pre></td></tr></table></figure>
+<p>请注意，和上一节有所不同，在行尾的脱字符表示提交的 parent - 行首的脱字符则表示不在这个分支上。</p>
+<h3 id="选择一个范围"><a href="#选择一个范围" class="headerlink" title="选择一个范围"></a>选择一个范围</h3><p>最简单的方法是这样来用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git log origin/master..new</span><br><span class="line"># [old]..[new] - everything you haven&apos;t pushed yet</span><br></pre></td></tr></table></figure>
+<p>你也可以删除 [new]，这将使用当前的 HEAD。</p>
+<p><code>时间回退和错误修复</code></p>
+<h3 id="重置更改"><a href="#重置更改" class="headerlink" title="重置更改"></a>重置更改</h3><p>如果你还没有提交一个更改，你可以很容易地重置它：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git reset HEAD lib/foo.rb</span><br></pre></td></tr></table></figure>
+<p>通常使用‘unstage’作为别名比较好，因为它不是那么显而易见。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git config --global alias.unstage &quot;reset HEAD&quot;</span><br><span class="line">$ git unstage lib/foo.rb</span><br></pre></td></tr></table></figure>
+<p>如果你已经提交了文件，你可以做两件事情 - 如果是最后一次提交，你可以这样来修改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git commit --amend</span><br></pre></td></tr></table></figure>
+<p>这将回滚到最后一次提交，让你的工作副本回到变化存储在暂存区的状态，你可以编辑提交消息准备下一次提交。<br>如果你的提交不止一次，并且只想完全回滚它们，你可以重置分支回到之前的时间点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout feature132</span><br><span class="line">$ git reset --hard HEAD~2</span><br></pre></td></tr></table></figure>
+<p>如果你真的想把分支指向一个完全不同的 SHA-1（也许你把一个分支的 HEAD 指向另一个分支，或者进一步提交），你可以按照以下方式去做：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout FOO</span><br><span class="line">$ git reset --hard SHA</span><br></pre></td></tr></table></figure>
+<p>实际上还有一种更便捷的方式（因为它不会先将你的工作副本变回最初 FOO 状态，然后再指向 SHA）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git update-ref refs/heads/FOO SHA</span><br></pre></td></tr></table></figure>
+<h3 id="提交到错误的分支"><a href="#提交到错误的分支" class="headerlink" title="提交到错误的分支"></a>提交到错误的分支</h3><p>好吧，让我们假设你提交到主分支，但应该已经创建了一个叫做 experimental 的主题分支。为了移除这些变化，你可以在当前点创建一个分支，回退 HEAD，然后检出新的分支：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git branch experimental   # Creates a pointer to the current master state</span><br><span class="line">$ git reset --hard master~3 # Moves the master branch pointer back to 3 revisions ago</span><br><span class="line">$ git checkout experimental</span><br></pre></td></tr></table></figure>
+<p>如果你已经在一个分支的一个分支的一个分支等上面做了些变更，这将会更复杂。然后你需要做的就是在这个分支上将其变更 rebase 到另一个的地方：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git branch newtopic STARTPOINT</span><br><span class="line">$ git rebase oldtopic --onto newtopic</span><br></pre></td></tr></table></figure>
+<h3 id="交互式-rebasing"><a href="#交互式-rebasing" class="headerlink" title="交互式 rebasing"></a>交互式 rebasing</h3><p>这是一个很酷的特性，我之前已看过演示，但当时没有真正搞明白，现在来看其实很简单。比方说，你已做了3次提交，但是你想对它们进行重新排序或者编辑（或者合并它们）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git rebase -i master~3</span><br></pre></td></tr></table></figure>
+<p>然后你将编辑器打开。你所要做的就是修改 “pick/squash/edit 的指令来进行如何提交，然后保存/退出。在编辑之后，你可以使用<code>git rebase —continue</code>让你的每一个指令一个一个进行。</p>
+<p>如果你选择编辑一个文件，这会让你停留在你提交时的状态，因此你需要使用<code>git commit —amend</code>对它进行编辑。</p>
+<p>备注：在 REBASE 过程中不要进行提交工作 - 只能添加然后使用 —continue, —skip or —abort 选项。</p>
+<h3 id="清理"><a href="#清理" class="headerlink" title="清理"></a>清理</h3><p>如果你已经提交了一些内容到你的分支中（也许你是从SVN中的旧代码库导入的），你想从历史中删除掉所有的已提交内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git filter-branch --tree-filter &apos;rm -f *.class&apos; HEAD</span><br></pre></td></tr></table></figure>
+<p>如果你已经向远程服务器推送过代码，但自那之后提交的都是一些垃圾，在推送之前你可以在本地系统上执行这样的操作：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git filter-branch --tree-filter &apos;rm -f *.class&apos; origin/master..HEAD</span><br></pre></td></tr></table></figure>
+<p><code>各种各样的提示</code></p>
+<h3 id="之前你看过的引用"><a href="#之前你看过的引用" class="headerlink" title="之前你看过的引用"></a>之前你看过的引用</h3><p>如果你知道你之前已经查看过一个 SHA-1，但是你已经做了一些重置/回退工作，你可以使用 reflog 命令去查看你最近看过的 SHA-1:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git reflog</span><br><span class="line">$ git log -g # Same as above, but shows in &apos;log&apos; format</span><br></pre></td></tr></table></figure>
+<h3 id="分支命名"><a href="#分支命名" class="headerlink" title="分支命名"></a>分支命名</h3><p>一个可爱的小提示 - 请记住，分支的名字并不局限于 a-z 和 0-9 这些字符。名字中可以使用 / 和 . 来伪装命名空间或者版本号，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ # Generate a changelog of Release 132</span><br><span class="line">$ git shortlog release/132 ^release/131</span><br><span class="line">$ # Tag this as v1.0.1</span><br><span class="line">$ git tag v1.0.1 release/132</span><br></pre></td></tr></table></figure>
+<h3 id="寻找谁是始作俑者"><a href="#寻找谁是始作俑者" class="headerlink" title="寻找谁是始作俑者"></a>寻找谁是始作俑者</h3><p>寻找谁更改了一个文件中的一行代码经常会用到。简单命令如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git blame FILE</span><br></pre></td></tr></table></figure>
+<p>有时更改来自于前一个文件（如果你已经合并了两个文件，或者你已经移动了一个函数），因此你可以这样用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ # shows which file names the content came from</span><br><span class="line">$ git blame -C FILE</span><br></pre></td></tr></table></figure>
+<p>有时通过向前或向后点击来进行变化跟踪，这是很好的方法。有一个内置的 GUI 程序专门为此设计：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git gui blame FILE</span><br></pre></td></tr></table></figure>
+<h3 id="数据库维护"><a href="#数据库维护" class="headerlink" title="数据库维护"></a>数据库维护</h3><p>Git 通常不需要大量维护，它基本上可以自我维护。然而，你可以使用如下命令查看数据库统计信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git count-objects -v</span><br></pre></td></tr></table></figure>
+<p>如果数值很高，你可以选择使用垃圾回收你的重复内容。这不会影响推送或者其它用户，但却可以让你的命令运行更快且占用更少空间：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git gc</span><br></pre></td></tr></table></figure>
+<p>经常运行一致性检查也是值得推荐的做法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git fsck --full</span><br></pre></td></tr></table></figure>
+<p>你也可以在行尾添加一个 —auto 参数（如果你频繁运行它，或者在你的服务器上每日从 crontab 中运行它），如果统计数据表明必须进行要进行一致性检查，只要 fsck 命令就行。</p>
+<p>如果检查 “dangling” 或 “unreachable” 的结果一切正常，这经常是由于回退 HEAD 或 rebasing的结果。如果检查“missing” 或 “sha1 mismatch” 出了问题…寻求专业帮助吧！</p>
+<h3 id="恢复一个丢失的分支"><a href="#恢复一个丢失的分支" class="headerlink" title="恢复一个丢失的分支"></a>恢复一个丢失的分支</h3><p>如果你使用 -D 选项删除了一个分支 experimental，你可以重新创建它：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git branch experimental SHA1_OF_HASH</span><br></pre></td></tr></table></figure>
+<p>你可以使用<code>git reflog</code>来发现一个 SHA-1 哈希值，如果你近期访问过它的话。</p>
+<p>另一种方法是使用<code>git fsck —lost-found</code>。一个悬空的提交就是一个<code>lost HEAD</code>（它只会是一个已删除分支的 HEAD，因为当一个 HEAD^ 被 HEAD 引用时，它就没有悬空）</p>
+<p>原文链接 : <a href="https://www.andyjeffries.co.uk/25-tips-for-intermediate-git-users/" target="_blank" rel="noopener">25 Tips for Intermediate Git Users</a></p>
+<div style="text-align: center;padding: 0; margin: 0;"><br>    <img class="wechat-qrcode" src="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png" alt="关注公众号"><br></div>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/2220897336/">Git 中级用户的25个提示</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 ibrucekong 的个人博客">ibrucekong</a></p>
+        <p><span class="post-count">文章字数:</span>5,536字</p>
+        <p><span class="post-count">阅读时长:</span>22分钟</p>
+        <p><span class="post-count">全站字数:</span>35.7k字</p>
+        <p><span>发布时间:</span>2015年08月28日 - 09时22分</p>
+        <p><span>最后更新:</span>2015年08月28日 - 09时22分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/2220897336/" title="Git 中级用户的25个提示">http://ibrucekong.github.io/posts/2220897336/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://ibrucekong.github.io/posts/2220897336/　　作者: ibrucekong" title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target="_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/posts/3412983070/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Node安装与配置
+        
+      </div>
+    </a>
+  
+  
+    <a href="/posts/1500121752/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">控制台，终端，tty，shell等概念的区别</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是Git"><span class="toc-number">1.</span> <span class="toc-text">什么是Git</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装及基本知识"><span class="toc-number">2.</span> <span class="toc-text">安装及基本知识</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#安装后第一步"><span class="toc-number">2.1.</span> <span class="toc-text">安装后第一步</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Git是以指针为基础"><span class="toc-number">2.2.</span> <span class="toc-text">Git是以指针为基础</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#两个Parents-当然！"><span class="toc-number">2.3.</span> <span class="toc-text">两个Parents - 当然！</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#合并冲突"><span class="toc-number">2.4.</span> <span class="toc-text">合并冲突</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#服务器、分支和标签"><span class="toc-number">3.</span> <span class="toc-text">服务器、分支和标签</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#远程服务器"><span class="toc-number">3.1.</span> <span class="toc-text">远程服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#标签"><span class="toc-number">3.2.</span> <span class="toc-text">标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#创建分支"><span class="toc-number">3.3.</span> <span class="toc-text">创建分支</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#合并分支"><span class="toc-number">3.4.</span> <span class="toc-text">合并分支</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#远程分支"><span class="toc-number">3.5.</span> <span class="toc-text">远程分支</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#临时存放（Stashing）"><span class="toc-number">3.6.</span> <span class="toc-text">临时存放（Stashing）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#交互式添加"><span class="toc-number">3.7.</span> <span class="toc-text">交互式添加</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#存储-从文件系统检索"><span class="toc-number">3.8.</span> <span class="toc-text">存储/从文件系统检索</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#日志记录"><span class="toc-number">4.</span> <span class="toc-text">日志记录</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#查看日志"><span class="toc-number">4.1.</span> <span class="toc-text">查看日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#检索日志"><span class="toc-number">4.2.</span> <span class="toc-text">检索日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#选择查看-修改的版本"><span class="toc-number">4.3.</span> <span class="toc-text">选择查看/修改的版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#选择一个范围"><span class="toc-number">4.4.</span> <span class="toc-text">选择一个范围</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#重置更改"><span class="toc-number">4.5.</span> <span class="toc-text">重置更改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#提交到错误的分支"><span class="toc-number">4.6.</span> <span class="toc-text">提交到错误的分支</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#交互式-rebasing"><span class="toc-number">4.7.</span> <span class="toc-text">交互式 rebasing</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#清理"><span class="toc-number">4.8.</span> <span class="toc-text">清理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#之前你看过的引用"><span class="toc-number">4.9.</span> <span class="toc-text">之前你看过的引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#分支命名"><span class="toc-number">4.10.</span> <span class="toc-text">分支命名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#寻找谁是始作俑者"><span class="toc-number">4.11.</span> <span class="toc-text">寻找谁是始作俑者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#数据库维护"><span class="toc-number">4.12.</span> <span class="toc-text">数据库维护</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#恢复一个丢失的分支"><span class="toc-number">4.13.</span> <span class="toc-text">恢复一个丢失的分支</span></a></li></ol></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
+<script src="/js/jjquery.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+
+    
+      <section id="comments" style="margin: 1px 30px;">
+	<!-- 来必力City版安装代码 -->
+	<div id="lv-container" data-id="city" data-uid="MTAyMC8zMDQ1Ny83MDEx" style="padding: 1px 10px;border-radius: 20px;">
+	<script type="text/javascript">
+	   (function(d, s) {
+	       var j, e = d.getElementsByTagName(s)[0];
+
+	       if (typeof LivereTower === 'function') { return; }
+
+	       j = d.createElement(s);
+	       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+	       j.async = true;
+
+	       e.parentNode.insertBefore(j, e);
+	   })(document, 'script');
+	</script>
+	<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+	</div>
+	<!-- City版安装代码已完成 -->
+</section>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/3412983070/" title="上一篇: Node安装与配置">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/posts/1500121752/" title="下一篇: 控制台，终端，tty，shell等概念的区别">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/3256505474/">吾爱破解论坛2018年11月11日开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4186109665/">济南的中秋</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3230248873/">BIMserver入门笔记 - 02登录及模型展示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3869274485/">BIMserver入门笔记 - 01环境搭建、数据导入及预览</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1380263657/">前端地图应用中几种监听事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1077207737/">IE和Chrome带有多个参数的互相跳转</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/289005530/">在Chrome中调试Ionic的Android应用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1652333246/">入坑公路车</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2994729501/">Ionic使用百度地图弹窗并响应点击事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2639421812/">吾爱破解论坛2018年7月21日暑假开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3249349784/">在Linux中解决跨网段访问服务</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1224017506/">在Linux中如何使用SCP快速拷贝数据</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3337762157/">从零开始搭建自己的博客天地(下)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2692255794/">使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/224769818/">吾爱破解论坛2018年3月13日十周年开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/547195145/">Nginx学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3718307484/">Cesium简介与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3667539278/">从零开始搭建自己的博客天地(上)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1297890910/">使用BeautifulSoup和pdfkit爬取菜鸟教程到pdf文件!</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1533523788/">Python3入门学习—02条件循环语句</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/58933767/">Python3入门学习—01环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3412983070/">Node安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2220897336/">Git 中级用户的25个提示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1500121752/">控制台，终端，tty，shell等概念的区别</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3490671754/">如何编写高质量的程序</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/417703024/">Markdown学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1191879354/">Android NDK学习入门教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4243991381/">基于GIS的团队管理系统的简介</a></li></ul>
+    <script src="/js/jjquery.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+	<script>
+		(function(){
+		    var bp = document.createElement('script');
+		    var curProtocol = window.location.protocol.split(':')[0];
+		    if (curProtocol === 'https') {
+		        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+		    }
+		    else {
+		        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		    }
+		    var s = document.getElementsByTagName("script")[0];
+		    s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+    <div class="outer">
+        <div id="visit">
+            <div class="footer-left">
+                &copy; 2019 ibrucekong
+            </div>
+            <div class="footer-center">
+				<span id="span_dt_dt"></span>
+            </div>
+            <div class="footer-right">
+                <span style="cursor:url('/mouse/hand.cur'),auto;" title="https://hexo.io"><a href="https://hexo.io" target="_blank">Hexo </a></span><span>Theme By </span><span style="cursor:url('/mouse/hand.cur'),auto;" title="maochunguang"><a href="https://github.com/maochunguang/black-blue" target="_blank">maochunguang</a></span>
+            </div>
+            <!--<div id="jbgsn" class="footer-right" style="cursor:url('./mouse/hand.cur'),auto;display: none;">
+            	<span  style="cursor:url('./mouse/hand.cur'),auto;" title="Love Story">Love Story</span>
+            </div>-->
+        </div>
+    </div>
+</footer>
+<script language="javascript">
+	function show_date_time(){
+		window.setTimeout("show_date_time()", 1000);
+		BirthDay=new Date("3/25/1990 08:00:00");//这个日期是可以修改的
+		today=new Date();
+		timeold=(today.getTime()-BirthDay.getTime());//其实仅仅改了这里
+		sectimeold=timeold/1000
+		secondsold=Math.floor(sectimeold);
+		msPerDay=24*60*60*1000
+		e_daysold=timeold/msPerDay
+		daysold=Math.floor(e_daysold);
+		e_hrsold=(e_daysold-daysold)*24;
+		hrsold=Math.floor(e_hrsold);
+		e_minsold=(e_hrsold-hrsold)*60;
+		minsold=Math.floor((e_hrsold-hrsold)*60);
+		seconds=Math.floor((e_minsold-minsold)*60);
+		span_dt_dt.innerHTML="博主已悄悄呼吸了"+daysold+"天"+hrsold+"小时"+minsold+"分"+seconds+"秒";
+	}
+	show_date_time();
+//	$("#jbgsn").click(function(e){
+//		self.location.href="/love-story.html";
+//	});
+</script>
+    </div>
+    <script src="/js/jjquery.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundimg = "url(/img/bg-left.jpg)";
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "https://hm.baidu.com/hm.js?1c15451748af3d908f1a66a51c683af5";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<!--<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>-->
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="L6Lm9d5Crl">
+  
+  
+  
+  
+  <title>控制台，终端，tty，shell等概念的区别 | ibrucekong</title>
+  <meta name="keywords" content="ibrucekong,Bruce Kong,Bruce">
+  <meta name="description" content="一个坚持在Code上的少年，就算前面是风雨，也会努力拼搏，迎接彩虹！">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta baidu-gxt-verify-token="d38209b74c2782fdf74a2140c3c46e3b">
+  <meta name="description" content="带你走进终端世界： 控制台程序是为了兼容DOS程序而设立的，这种程序的执行就好像在一个DOS窗口中执行一样，没有自己的界面。">
+<meta name="keywords" content="控制台,终端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="控制台，终端，tty，shell等概念的区别">
+<meta property="og:url" content="http://ibrucekong.github.io/posts/1500121752/index.html">
+<meta property="og:site_name" content="ibrucekong">
+<meta property="og:description" content="带你走进终端世界： 控制台程序是为了兼容DOS程序而设立的，这种程序的执行就好像在一个DOS窗口中执行一样，没有自己的界面。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+<meta property="og:updated_time" content="2015-08-25T12:55:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="控制台，终端，tty，shell等概念的区别">
+<meta name="twitter:description" content="带你走进终端世界： 控制台程序是为了兼容DOS程序而设立的，这种程序的执行就好像在一个DOS窗口中执行一样，没有自己的界面。">
+<meta name="twitter:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+  
+    <link rel="alternative" href="/atom.xml" title="ibrucekong" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <script src="/js/love.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+    
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+      console.log("Welcome to Bruce's world!——欢迎来到Bruce的世界！");
+      console.log("主页请访问：http://ibrucekong.github.io");
+  </script>
+  <script type="hidden" src="https://s4.cnzz.com/z_stat.php?id=1256273509&web_id=1256273509" language="JavaScript"></script>
+  <style>
+		body{
+			cursor:url('/mouse/arrow.cur'),auto;
+		}
+		a{
+			cursor: url('/mouse/hand.cur'),auto;
+		}
+	</style>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <script src="/js/jjquery.js"></script>
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">ibrucekong</a></h1>
+        </hgroup>
+        
+        <p class="header-subtitle">JUST DO IT</p>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder=" Search...">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives/index.html">所有文章</a></li>
+                        
+                            <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                        
+                            <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                        
+                            <li><a href="/categories/tips/index.html">学习心得</a></li>
+                        
+                            <li><a href="/about/index.html">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                            
+                                <a class="fl weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/3D-Map/" style="font-size: 10px;">3D Map</a> <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/BIM/" style="font-size: 15px;">BIM</a> <a href="/tags/BIMserver/" style="font-size: 15px;">BIMserver</a> <a href="/tags/BeautifulSoup/" style="font-size: 10px;">BeautifulSoup</a> <a href="/tags/Blog/" style="font-size: 15px;">Blog</a> <a href="/tags/Cesium/" style="font-size: 10px;">Cesium</a> <a href="/tags/Chrome/" style="font-size: 15px;">Chrome</a> <a href="/tags/GIS/" style="font-size: 15px;">GIS</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/Hexo/" style="font-size: 15px;">Hexo</a> <a href="/tags/IE/" style="font-size: 10px;">IE</a> <a href="/tags/Ionic/" style="font-size: 15px;">Ionic</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/Nginx/" style="font-size: 15px;">Nginx</a> <a href="/tags/Node/" style="font-size: 10px;">Node</a> <a href="/tags/OpenSSL/" style="font-size: 10px;">OpenSSL</a> <a href="/tags/Pdfkit/" style="font-size: 10px;">Pdfkit</a> <a href="/tags/Python3/" style="font-size: 20px;">Python3</a> <a href="/tags/Route/" style="font-size: 10px;">Route</a> <a href="/tags/SCP/" style="font-size: 10px;">SCP</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/中秋/" style="font-size: 10px;">中秋</a> <a href="/tags/事件监听/" style="font-size: 10px;">事件监听</a> <a href="/tags/代理/" style="font-size: 15px;">代理</a> <a href="/tags/公路车/" style="font-size: 10px;">公路车</a> <a href="/tags/写作/" style="font-size: 10px;">写作</a> <a href="/tags/吾爱破解/" style="font-size: 20px;">吾爱破解</a> <a href="/tags/心得/" style="font-size: 10px;">心得</a> <a href="/tags/控制台/" style="font-size: 10px;">控制台</a> <a href="/tags/活动/" style="font-size: 20px;">活动</a> <a href="/tags/济南/" style="font-size: 10px;">济南</a> <a href="/tags/点击事件/" style="font-size: 10px;">点击事件</a> <a href="/tags/爬虫/" style="font-size: 10px;">爬虫</a> <a href="/tags/版本管理/" style="font-size: 15px;">版本管理</a> <a href="/tags/百度地图/" style="font-size: 10px;">百度地图</a> <a href="/tags/终端/" style="font-size: 10px;">终端</a> <a href="/tags/编程语言/" style="font-size: 10px;">编程语言</a> <a href="/tags/自行车/" style="font-size: 10px;">自行车</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/跳转/" style="font-size: 10px;">跳转</a>
+                    </div>
+                </section>
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://weibo.com/kongbin1246053598de">新浪</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://www.jianshu.com/users/4bd3b777695a/timeline">简书</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://blog.brucekong.com">博客</a>
+                    
+                    </div>
+                </section>
+                
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">ibrucekong</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">ibrucekong</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">JUST DO IT</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives/index.html">所有文章</a></li>
+                
+                    <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                
+                    <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                
+                    <li><a href="/categories/tips/index.html">学习心得</a></li>
+                
+                    <li><a href="/about/index.html">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                    
+                        <a class="weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-console-terminal-tty-shell-and-other-concepts" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/1500121752/" class="article-date">
+      <time datetime="2015-08-25T12:55:20.000Z" itemprop="datePublished">2015-08-25</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      控制台，终端，tty，shell等概念的区别
+    </h1>
+  
+
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/tools/">tools</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/控制台/">控制台</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/终端/">终端</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><strong>带你走进终端世界：</strong></p>
+<p>控制台程序是为了兼容DOS程序而设立的，这种程序的执行就好像在一个DOS窗口中执行一样，没有自己的界面。</p>
+<a id="more"></a>
+<p>使用linux已经有一段时间，却一直弄不明白这几个概念之间的区别。虽然一直在用，但是很多概念都感觉模糊不清，这样不上不下的状态实在令人不爽。下面就澄清一下这些概念。</p>
+<p>这些概念本身有着非常浓厚的历史气息，随着时代的发展，他们的含义也在发生改变，它们有些已经失去了最初的含义，但是它们的名字却被保留了下来。</p>
+<h2 id="控制台-Console"><a href="#控制台-Console" class="headerlink" title="控制台(Console)"></a>控制台(Console)</h2><p>控制台(Console)是物理设备，用于输入输出，它直接连接在计算机上，是计算机系统的一部分。计算机输出的信息会显示在控制台上，例如BIOS的输出，内核的输出。</p>
+<h2 id="终端-Terminal"><a href="#终端-Terminal" class="headerlink" title="终端(Terminal)"></a>终端(Terminal)</h2><p>终端(Terminal)也是一台物理设备，只用于输入输出，本身没有强大的计算能力。一台计算机只有一个控制台，在计算资源紧张的时代，人们想共享一台计算机，可以通过终端连接到计算机上，将指令输入终端，终端传送给计算机，计算机完成指令后，将输出传送给终端，终端将结果显示给用户。</p>
+<h2 id="虚拟控制台-Virtual-Console-，虚拟终端-Virtual-Terminal"><a href="#虚拟控制台-Virtual-Console-，虚拟终端-Virtual-Terminal" class="headerlink" title="虚拟控制台(Virtual Console)，虚拟终端(Virtual Terminal)"></a>虚拟控制台(Virtual Console)，虚拟终端(Virtual Terminal)</h2><p>虚拟控制台(Virtual Console)和虚拟终端是一样的。我们只有一台终端（物理设备），这是我们与计算机之间的用户接口。假如有一天，我们想拥有多个用户接口，那么，一方面我们可以增加终端数目（物理设备），另一方面，还可以在同一台终端（物理设备）上虚拟出多个终端，它们之间互相不影响，至少看起来互相不影响。这些终端就是虚拟终端。</p>
+<p>在Ubuntu中，我们按下Ctrl+Alt+Fx时，会进入第x个虚拟终端，一共有七个虚拟终端，其中第七个虚拟终端，就是我们默认使用的图形用户界面。</p>
+<h2 id="终端模拟器-Terminal-Emulator"><a href="#终端模拟器-Terminal-Emulator" class="headerlink" title="终端模拟器(Terminal Emulator)"></a>终端模拟器(Terminal Emulator)</h2><p>我们知道，终端是一种物理设备，而终端模拟器(Terminal Emulator)，是一个程序，这些程序用来模拟物理终端。图形用户界面中的终端模拟器一般称为终端窗口(Terminal Window)，我们在Ubuntu下打开的gnome-terminal就属于此类。</p>
+<h2 id="tty"><a href="#tty" class="headerlink" title="tty"></a>tty</h2><p>tty的全称是TeleTYpewriter，这就是早期的终端（物理设备），它们用于向计算机发送数据，并将计算机的返回结果打印出来。显示器出现后，终端不再将结果打印出来，而是显示在显示器上。但是tty的名字还是保留了下来。</p>
+<p>在Ubuntu中，我们按下Ctrl+Alt+F1时，会进入第1个虚拟终端，你可以看到屏幕上方显示的tty1。</p>
+<h2 id="shell"><a href="#shell" class="headerlink" title="shell"></a>shell</h2><p>shell 和之前说的几个概念截然不同，之前的几个概念都是与计算机的输入输出相关的，而shell是和内核相关的。内核为上层的应用提供了很多服务，shell在内核的上层，在应用程序的下层。例如，你写了一个 hello world 程序，你并不用显式地创建一个进程来运行你的程序，你把写好的程序交给shell就行了，由shell负责为你的程序创建进程。</p>
+<p>我们在终端模拟器中输入命令时，终端模拟器本身并不解释执行这些命令，它只负责输入输出，真正解释执行这些命令的，是shell。</p>
+<p>我们平时使用的sh, bash, csh是shell的不同实现。</p>
+<blockquote>
+<p><strong>sh:</strong><br>sh这个概念本身就有岐义，它可以指shell程序的名字，也代表了shell的实现。<br>Thompson shell是第一个Unix shell，由 Ken Thompso于1971年在Unix第一版本中引入，shell的程序名即为sh。Bourne shell作为Thompson shell的替代，由 Stephen Bourne于1977年在Unix第七版中引入，它的程序名也是sh。Bourne shell不仅仅是一个命令解释器，更作为一种编程语言，提供了Thompson shell不具备的程序控制功能，并随着 Brian W. Kernighan 和 Rob Pike 的 The UNIX Programming Environment的出版而名声大噪。</p>
+<p><strong>csh: </strong><br>csh全称为 C Shell，由 Bill Joy在70年代晚期完成，那时候他还是加州伯克利大学的研究生。tcsh是csh的升级版。与sh不同，csh的shell脚本，语法接近于C_language。</p>
+<p><strong>bash: </strong><br>bash是由 Brian Fox为GNU项目开发的自由软件，作为Bourne shell的替代品，于1989年发布。是Linux和Mac OS X的默认shell。bash的命令语法是Bourne shell命令语法的超集，从ksh和csh借鉴了一些思想。</p>
+</blockquote>
+<p>好了，就写到这里，上面的内容是我参考维基百科后写下的，<code>不保证完全正确</code>，下面还提供了一些资料，如果有兴趣可以阅读一下。</p>
+<h2 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h2><blockquote>
+<ul>
+<li><a href="http://unix.stackexchange.com/questions/4126/what-is-the-exact-difference-between-a-terminal-a-shell-a-tty-and-a-con" target="_blank" rel="noopener">What is the exact difference between a ‘terminal’, a ‘shell’, a ‘tty’ and a ‘console’?</a></li>
+<li><a href="http://www.linuxsir.org/bbs/thread362001.html?pageon=1#2059206" target="_blank" rel="noopener">shell，bash,zsh,console,terminal到底是什么意思，它们之间又是什么关系？</a></li>
+<li><a href="http://blog.csdn.net/caomiao2006/article/details/8791775" target="_blank" rel="noopener">shell、控制台、终端的区别</a></li>
+<li><a href="http://askubuntu.com/questions/14284/why-is-a-virtual-terminal-virtual-and-what-why-where-is-the-real-terminal" target="_blank" rel="noopener">Why is a virtual terminal “virtual”, and what/why/where is the “real” terminal?</a></li>
+</ul>
+</blockquote>
+<p><strong>参考自:</strong><a href="http://minixalpha.github.io/%E5%B7%A5%E5%85%B7/2014/02/28/terminal-shell.html" target="_blank" rel="noopener">Minixalpha Blog</a></p>
+<div style="text-align: center;padding: 0; margin: 0;"><br>    <img class="wechat-qrcode" src="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png" alt="关注公众号"><br></div>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/1500121752/">控制台，终端，tty，shell等概念的区别</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 ibrucekong 的个人博客">ibrucekong</a></p>
+        <p><span class="post-count">文章字数:</span>1,351字</p>
+        <p><span class="post-count">阅读时长:</span>5分钟</p>
+        <p><span class="post-count">全站字数:</span>35.7k字</p>
+        <p><span>发布时间:</span>2015年08月25日 - 20时55分</p>
+        <p><span>最后更新:</span>2015年08月25日 - 20时55分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/1500121752/" title="控制台，终端，tty，shell等概念的区别">http://ibrucekong.github.io/posts/1500121752/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://ibrucekong.github.io/posts/1500121752/　　作者: ibrucekong" title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target="_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/posts/2220897336/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Git 中级用户的25个提示
+        
+      </div>
+    </a>
+  
+  
+    <a href="/posts/3490671754/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">如何编写高质量的程序</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#控制台-Console"><span class="toc-number">1.</span> <span class="toc-text">控制台(Console)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#终端-Terminal"><span class="toc-number">2.</span> <span class="toc-text">终端(Terminal)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#虚拟控制台-Virtual-Console-，虚拟终端-Virtual-Terminal"><span class="toc-number">3.</span> <span class="toc-text">虚拟控制台(Virtual Console)，虚拟终端(Virtual Terminal)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#终端模拟器-Terminal-Emulator"><span class="toc-number">4.</span> <span class="toc-text">终端模拟器(Terminal Emulator)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#tty"><span class="toc-number">5.</span> <span class="toc-text">tty</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#shell"><span class="toc-number">6.</span> <span class="toc-text">shell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#扩展阅读"><span class="toc-number">7.</span> <span class="toc-text">扩展阅读</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
+<script src="/js/jjquery.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+
+    
+      <section id="comments" style="margin: 1px 30px;">
+	<!-- 来必力City版安装代码 -->
+	<div id="lv-container" data-id="city" data-uid="MTAyMC8zMDQ1Ny83MDEx" style="padding: 1px 10px;border-radius: 20px;">
+	<script type="text/javascript">
+	   (function(d, s) {
+	       var j, e = d.getElementsByTagName(s)[0];
+
+	       if (typeof LivereTower === 'function') { return; }
+
+	       j = d.createElement(s);
+	       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+	       j.async = true;
+
+	       e.parentNode.insertBefore(j, e);
+	   })(document, 'script');
+	</script>
+	<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+	</div>
+	<!-- City版安装代码已完成 -->
+</section>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/2220897336/" title="上一篇: Git 中级用户的25个提示">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/posts/3490671754/" title="下一篇: 如何编写高质量的程序">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/3256505474/">吾爱破解论坛2018年11月11日开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4186109665/">济南的中秋</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3230248873/">BIMserver入门笔记 - 02登录及模型展示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3869274485/">BIMserver入门笔记 - 01环境搭建、数据导入及预览</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1380263657/">前端地图应用中几种监听事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1077207737/">IE和Chrome带有多个参数的互相跳转</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/289005530/">在Chrome中调试Ionic的Android应用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1652333246/">入坑公路车</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2994729501/">Ionic使用百度地图弹窗并响应点击事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2639421812/">吾爱破解论坛2018年7月21日暑假开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3249349784/">在Linux中解决跨网段访问服务</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1224017506/">在Linux中如何使用SCP快速拷贝数据</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3337762157/">从零开始搭建自己的博客天地(下)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2692255794/">使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/224769818/">吾爱破解论坛2018年3月13日十周年开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/547195145/">Nginx学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3718307484/">Cesium简介与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3667539278/">从零开始搭建自己的博客天地(上)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1297890910/">使用BeautifulSoup和pdfkit爬取菜鸟教程到pdf文件!</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1533523788/">Python3入门学习—02条件循环语句</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/58933767/">Python3入门学习—01环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3412983070/">Node安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2220897336/">Git 中级用户的25个提示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1500121752/">控制台，终端，tty，shell等概念的区别</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3490671754/">如何编写高质量的程序</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/417703024/">Markdown学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1191879354/">Android NDK学习入门教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4243991381/">基于GIS的团队管理系统的简介</a></li></ul>
+    <script src="/js/jjquery.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+	<script>
+		(function(){
+		    var bp = document.createElement('script');
+		    var curProtocol = window.location.protocol.split(':')[0];
+		    if (curProtocol === 'https') {
+		        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+		    }
+		    else {
+		        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		    }
+		    var s = document.getElementsByTagName("script")[0];
+		    s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+    <div class="outer">
+        <div id="visit">
+            <div class="footer-left">
+                &copy; 2019 ibrucekong
+            </div>
+            <div class="footer-center">
+				<span id="span_dt_dt"></span>
+            </div>
+            <div class="footer-right">
+                <span style="cursor:url('/mouse/hand.cur'),auto;" title="https://hexo.io"><a href="https://hexo.io" target="_blank">Hexo </a></span><span>Theme By </span><span style="cursor:url('/mouse/hand.cur'),auto;" title="maochunguang"><a href="https://github.com/maochunguang/black-blue" target="_blank">maochunguang</a></span>
+            </div>
+            <!--<div id="jbgsn" class="footer-right" style="cursor:url('./mouse/hand.cur'),auto;display: none;">
+            	<span  style="cursor:url('./mouse/hand.cur'),auto;" title="Love Story">Love Story</span>
+            </div>-->
+        </div>
+    </div>
+</footer>
+<script language="javascript">
+	function show_date_time(){
+		window.setTimeout("show_date_time()", 1000);
+		BirthDay=new Date("3/25/1990 08:00:00");//这个日期是可以修改的
+		today=new Date();
+		timeold=(today.getTime()-BirthDay.getTime());//其实仅仅改了这里
+		sectimeold=timeold/1000
+		secondsold=Math.floor(sectimeold);
+		msPerDay=24*60*60*1000
+		e_daysold=timeold/msPerDay
+		daysold=Math.floor(e_daysold);
+		e_hrsold=(e_daysold-daysold)*24;
+		hrsold=Math.floor(e_hrsold);
+		e_minsold=(e_hrsold-hrsold)*60;
+		minsold=Math.floor((e_hrsold-hrsold)*60);
+		seconds=Math.floor((e_minsold-minsold)*60);
+		span_dt_dt.innerHTML="博主已悄悄呼吸了"+daysold+"天"+hrsold+"小时"+minsold+"分"+seconds+"秒";
+	}
+	show_date_time();
+//	$("#jbgsn").click(function(e){
+//		self.location.href="/love-story.html";
+//	});
+</script>
+    </div>
+    <script src="/js/jjquery.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundimg = "url(/img/bg-left.jpg)";
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "https://hm.baidu.com/hm.js?1c15451748af3d908f1a66a51c683af5";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<!--<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>-->
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>

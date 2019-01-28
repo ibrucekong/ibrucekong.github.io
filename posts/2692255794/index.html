@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="L6Lm9d5Crl">
+  
+  
+  
+  
+  <title>使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6 | ibrucekong</title>
+  <meta name="keywords" content="ibrucekong,Bruce Kong,Bruce">
+  <meta name="description" content="一个坚持在Code上的少年，就算前面是风雨，也会努力拼搏，迎接彩虹！">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta baidu-gxt-verify-token="d38209b74c2782fdf74a2140c3c46e3b">
+  <meta name="description" content="HTTPS的初试：前两天看谷歌开发者公众号了解到Google Chrome要在68这个版本时彻底将HTTP网站列为不安全，要求全部网站都要支持HTTPS，由此萌生了先在本地搭建一些HTTPS的站点的想法。">
+<meta name="keywords" content="Nginx,代理,GIS,OpenSSL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6">
+<meta property="og:url" content="http://ibrucekong.github.io/posts/2692255794/index.html">
+<meta property="og:site_name" content="ibrucekong">
+<meta property="og:description" content="HTTPS的初试：前两天看谷歌开发者公众号了解到Google Chrome要在68这个版本时彻底将HTTP网站列为不安全，要求全部网站都要支持HTTPS，由此萌生了先在本地搭建一些HTTPS的站点的想法。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+<meta property="og:updated_time" content="2018-03-08T06:12:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6">
+<meta name="twitter:description" content="HTTPS的初试：前两天看谷歌开发者公众号了解到Google Chrome要在68这个版本时彻底将HTTP网站列为不安全，要求全部网站都要支持HTTPS，由此萌生了先在本地搭建一些HTTPS的站点的想法。">
+<meta name="twitter:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+  
+    <link rel="alternative" href="/atom.xml" title="ibrucekong" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <script src="/js/love.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+    
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+      console.log("Welcome to Bruce's world!——欢迎来到Bruce的世界！");
+      console.log("主页请访问：http://ibrucekong.github.io");
+  </script>
+  <script type="hidden" src="https://s4.cnzz.com/z_stat.php?id=1256273509&web_id=1256273509" language="JavaScript"></script>
+  <style>
+		body{
+			cursor:url('/mouse/arrow.cur'),auto;
+		}
+		a{
+			cursor: url('/mouse/hand.cur'),auto;
+		}
+	</style>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <script src="/js/jjquery.js"></script>
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">ibrucekong</a></h1>
+        </hgroup>
+        
+        <p class="header-subtitle">JUST DO IT</p>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder=" Search...">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives/index.html">所有文章</a></li>
+                        
+                            <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                        
+                            <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                        
+                            <li><a href="/categories/tips/index.html">学习心得</a></li>
+                        
+                            <li><a href="/about/index.html">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                            
+                                <a class="fl weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/3D-Map/" style="font-size: 10px;">3D Map</a> <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/BIM/" style="font-size: 15px;">BIM</a> <a href="/tags/BIMserver/" style="font-size: 15px;">BIMserver</a> <a href="/tags/BeautifulSoup/" style="font-size: 10px;">BeautifulSoup</a> <a href="/tags/Blog/" style="font-size: 15px;">Blog</a> <a href="/tags/Cesium/" style="font-size: 10px;">Cesium</a> <a href="/tags/Chrome/" style="font-size: 15px;">Chrome</a> <a href="/tags/GIS/" style="font-size: 15px;">GIS</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/Hexo/" style="font-size: 15px;">Hexo</a> <a href="/tags/IE/" style="font-size: 10px;">IE</a> <a href="/tags/Ionic/" style="font-size: 15px;">Ionic</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/Nginx/" style="font-size: 15px;">Nginx</a> <a href="/tags/Node/" style="font-size: 10px;">Node</a> <a href="/tags/OpenSSL/" style="font-size: 10px;">OpenSSL</a> <a href="/tags/Pdfkit/" style="font-size: 10px;">Pdfkit</a> <a href="/tags/Python3/" style="font-size: 20px;">Python3</a> <a href="/tags/Route/" style="font-size: 10px;">Route</a> <a href="/tags/SCP/" style="font-size: 10px;">SCP</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/中秋/" style="font-size: 10px;">中秋</a> <a href="/tags/事件监听/" style="font-size: 10px;">事件监听</a> <a href="/tags/代理/" style="font-size: 15px;">代理</a> <a href="/tags/公路车/" style="font-size: 10px;">公路车</a> <a href="/tags/写作/" style="font-size: 10px;">写作</a> <a href="/tags/吾爱破解/" style="font-size: 20px;">吾爱破解</a> <a href="/tags/心得/" style="font-size: 10px;">心得</a> <a href="/tags/控制台/" style="font-size: 10px;">控制台</a> <a href="/tags/活动/" style="font-size: 20px;">活动</a> <a href="/tags/济南/" style="font-size: 10px;">济南</a> <a href="/tags/点击事件/" style="font-size: 10px;">点击事件</a> <a href="/tags/爬虫/" style="font-size: 10px;">爬虫</a> <a href="/tags/版本管理/" style="font-size: 15px;">版本管理</a> <a href="/tags/百度地图/" style="font-size: 10px;">百度地图</a> <a href="/tags/终端/" style="font-size: 10px;">终端</a> <a href="/tags/编程语言/" style="font-size: 10px;">编程语言</a> <a href="/tags/自行车/" style="font-size: 10px;">自行车</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/跳转/" style="font-size: 10px;">跳转</a>
+                    </div>
+                </section>
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://weibo.com/kongbin1246053598de">新浪</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://www.jianshu.com/users/4bd3b777695a/timeline">简书</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://blog.brucekong.com">博客</a>
+                    
+                    </div>
+                </section>
+                
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">ibrucekong</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">ibrucekong</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">JUST DO IT</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives/index.html">所有文章</a></li>
+                
+                    <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                
+                    <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                
+                    <li><a href="/categories/tips/index.html">学习心得</a></li>
+                
+                    <li><a href="/about/index.html">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                    
+                        <a class="weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-nginx-openssl-https-set-up-arcgis-js-api" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/2692255794/" class="article-date">
+      <time datetime="2018-03-08T06:12:20.000Z" itemprop="datePublished">2018-03-08</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6
+    </h1>
+  
+
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/gis/">gis</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GIS/">GIS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenSSL/">OpenSSL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/代理/">代理</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><strong>HTTPS的初试：</strong><br>前两天看谷歌开发者公众号了解到Google Chrome要在68这个版本时彻底将HTTP网站列为不安全，要求全部网站都要支持HTTPS，由此萌生了先在本地搭建一些HTTPS的站点的想法。</p>
+<a id="more"></a>
+<h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1 背景"></a>1 背景</h2><p>由于工作任务，最近一直在写本子，了解了一些GIS方面的小知识，但是学的很浅显，其中就包括ArcGIS for JavaScript。基于谷歌公众号里面的启发，就想着在本地搭建一个HTTPS结构的ArcGIS for JavaScript站点。</p>
+<h2 id="2-准备工作"><a href="#2-准备工作" class="headerlink" title="2 准备工作"></a>2 准备工作</h2><ul>
+<li>Nginx <a href="http://nginx.org/en/download.html" target="_blank" rel="noopener">下载</a></li>
+<li>OpenSSL <a href="http://down-www.7down.net/pcdown/soft/W/win64openssl.rar" target="_blank" rel="noopener">下载</a></li>
+<li>ArcGIS for JavaScript 4.6 <a href="https://developers.arcgis.com/downloads/apis-and-sdks?product=javascript&amp;version=4.6" target="_blank" rel="noopener">下载</a></li>
+</ul>
+<p><strong><em>注意：下载ArcGIS for JavaScript前，先在<a href="https://developers.arcgis.com" target="_blank" rel="noopener">https://developers.arcgis.com</a>注册ArcGIS账号</em></strong></p>
+<h2 id="3-安装配置"><a href="#3-安装配置" class="headerlink" title="3 安装配置"></a>3 安装配置</h2><h3 id="3-1-Nginx"><a href="#3-1-Nginx" class="headerlink" title="3.1 Nginx"></a>3.1 Nginx</h3><p>下载好Nginx后，解压到<code>C:\</code>，得到<code>nginx.exe</code>在<code>C:\nginx\</code>根目录下，并将<code>C:\nginx</code>添加到系统环境变量的<code>PATH</code>中，即可完成Nginx的安装和配置。</p>
+<h3 id="3-2-OpenSSL"><a href="#3-2-OpenSSL" class="headerlink" title="3.2 OpenSSL"></a>3.2 OpenSSL</h3><p>下载好OpenSSL后，双击安装，将安装目录设置为<code>C:\</code>中，安装后即为<code>C:\OpenSSL-Win64</code>，同理将<code>C:\OpenSSL-Win64\bin</code>添加到系统环境变量的<code>PATH</code>中，即可完成Nginx的安装和配置。</p>
+<h3 id="3-3-ArcGIS-for-JavaScript-4-6"><a href="#3-3-ArcGIS-for-JavaScript-4-6" class="headerlink" title="3.3 ArcGIS for JavaScript 4.6"></a>3.3 ArcGIS for JavaScript 4.6</h3><p>下载好ArcGIS for JavaScript 4.6后，解压到<code>C:\nginx\html\</code>中，得到一个<code>C:\nginx\html\arcgis_js_api\library\4.6\</code>类似的目录。和往常一样，需要修改<code>init.js</code>和<code>dojo.js</code>中的域名信息。</p>
+<p>将init.js和dojo.js中的以下的信息：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baseUrl:&quot;https://[HOSTNAME_AND_PATH_TO_JSAPI]dojo&quot;</span><br></pre></td></tr></table></figure></p>
+<p>修改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">baseUrl:&quot;http://localhost/arcgis_js_api/library/4.6/dojo&quot;</span><br><span class="line"></span><br><span class="line">or</span><br><span class="line"></span><br><span class="line">baseUrl:&quot;https://localhost/arcgis_js_api/library/4.6/dojo&quot;</span><br></pre></td></tr></table></figure></p>
+<p><strong> 注意：<del>将https改为http</del>  这里不改也是可以的 </strong></p>
+<p>自此，安装配置即已经完成，下一步需要生成并在Nginx中配置证书。</p>
+<h2 id="4-证书的生成与配置"><a href="#4-证书的生成与配置" class="headerlink" title="4 证书的生成与配置"></a>4 证书的生成与配置</h2><h3 id="4-1生成证书"><a href="#4-1生成证书" class="headerlink" title="4.1生成证书"></a>4.1生成证书</h3><p>在网上查资料，有大佬是这样子做的（先不要照抄这里，继续看下面的）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ openssl req -x509 -newkey rsa:2048 -out LocalhostCA.cer -outform PEM -keyout LocalhostCA.pvk -days 10000 -verbose -config LocalhostCA.cnf -nodes -sha256 -subj &quot;/CN=localhost CA&quot;</span><br><span class="line"></span><br><span class="line">$ openssl req -newkey rsa:2048 -keyout Localhost.pvk -out Localhost.req -subj /CN=localhost -sha256 -nodes</span><br><span class="line"></span><br><span class="line">$ openssl x509 -req -CA LocalhostCA.cer -CAkey LocalhostCA.pvk -in Localhost.req -out Localhost.cer -days 10000 -extfile Localhost.ext -sha256 -set_serial 0x1111</span><br></pre></td></tr></table></figure>
+<p>首先在<code>C:\OpenSSL-Win64\bin</code>新建两个文件：<br>第一个文件<code>LocalhostCA.cnf</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[ req ]</span><br><span class="line">distinguished_name  = req_distinguished_name</span><br><span class="line">x509_extensions     = root_ca</span><br><span class="line"></span><br><span class="line">[ req_distinguished_name ]</span><br><span class="line">countryName             = CN</span><br><span class="line">countryName_min         = 2</span><br><span class="line">countryName_max         = 2</span><br><span class="line">stateOrProvinceName     = Ji Nan</span><br><span class="line">localityName            = Ji Nan</span><br><span class="line">0.organizationName      = TelChina</span><br><span class="line">organizationalUnitName  = GIS Engineer</span><br><span class="line">commonName              = localhost</span><br><span class="line">commonName_max          = 64</span><br><span class="line">emailAddress            = kongbin0325@hotmail.com</span><br><span class="line">emailAddress_max        = 64</span><br><span class="line"></span><br><span class="line">[ root_ca ]</span><br><span class="line">basicConstraints            = critical, CA:true</span><br></pre></td></tr></table></figure></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">配置项</th>
+<th style="text-align:left">值</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">distinguished_name</td>
+<td style="text-align:left">req_distinguished_name</td>
+<td style="text-align:left">不用管，反正我没改</td>
+</tr>
+<tr>
+<td style="text-align:left">x509_extensions</td>
+<td style="text-align:left">root_ca</td>
+<td style="text-align:left">X.509证书的扩展项(我瞎说的)</td>
+</tr>
+<tr>
+<td style="text-align:left">countryName</td>
+<td style="text-align:left">CN</td>
+<td style="text-align:left">国家缩写，必须是两个字母</td>
+</tr>
+<tr>
+<td style="text-align:left">countryName_min</td>
+<td style="text-align:left">2</td>
+<td style="text-align:left">就写2吧</td>
+</tr>
+<tr>
+<td style="text-align:left">countryName_max</td>
+<td style="text-align:left">2</td>
+<td style="text-align:left">也是2。。。</td>
+</tr>
+<tr>
+<td style="text-align:left">stateOrProvinceName</td>
+<td style="text-align:left">ShanDong</td>
+<td style="text-align:left">所在省</td>
+</tr>
+<tr>
+<td style="text-align:left">localityName</td>
+<td style="text-align:left">Ji Nan</td>
+<td style="text-align:left">所在市</td>
+</tr>
+<tr>
+<td style="text-align:left">0.organizationName</td>
+<td style="text-align:left">TelChina</td>
+<td style="text-align:left">所在公司</td>
+</tr>
+<tr>
+<td style="text-align:left">organizationalUnitName</td>
+<td style="text-align:left">GIS Engineer</td>
+<td style="text-align:left">职位</td>
+</tr>
+<tr>
+<td style="text-align:left">commonName</td>
+<td style="text-align:left">localhost</td>
+<td style="text-align:left">自己的域名</td>
+</tr>
+<tr>
+<td style="text-align:left">commonName_max</td>
+<td style="text-align:left">64</td>
+<td style="text-align:left">我抄的</td>
+</tr>
+<tr>
+<td style="text-align:left">emailAddress</td>
+<td style="text-align:left"><a href="mailto:kongbin0325@hotmail.com" target="_blank" rel="noopener">kongbin0325@hotmail.com</a></td>
+<td style="text-align:left">邮箱</td>
+</tr>
+<tr>
+<td style="text-align:left">emailAddress_max</td>
+<td style="text-align:left">64</td>
+<td style="text-align:left">还是抄的</td>
+</tr>
+<tr>
+<td style="text-align:left">basicConstraints</td>
+<td style="text-align:left">critical, CA:true</td>
+<td style="text-align:left">照着我的写就行！</td>
+</tr>
+</tbody>
+</table>
+<p><strong> 注意：countryName和 commonName要特别注意，其他的都OK ！ </strong></p>
+<p>第二个文件<code>Localhost.ext</code>:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">subjectAltName = @alt_names</span><br><span class="line">extendedKeyUsage = serverAuth</span><br><span class="line"></span><br><span class="line">[alt_names]</span><br><span class="line">DNS.1   = localhost</span><br></pre></td></tr></table></figure></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">配置项</th>
+<th style="text-align:left">值</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">subjectAltName</td>
+<td style="text-align:left">@alt_names</td>
+<td style="text-align:left">不用管，反正我没改</td>
+</tr>
+<tr>
+<td style="text-align:left">extendedKeyUsage</td>
+<td style="text-align:left">serverAuth</td>
+<td style="text-align:left">不用管，反正我没改</td>
+</tr>
+<tr>
+<td style="text-align:left">DNS.1</td>
+<td style="text-align:left">localhost</td>
+<td style="text-align:left">设置域名</td>
+</tr>
+<tr>
+<td style="text-align:left">DNS.2</td>
+<td style="text-align:left">123.123.32.34</td>
+<td style="text-align:left">懂吧，可以设置多个域名（这个IP是我瞎写的）</td>
+</tr>
+</tbody>
+</table>
+<p>然后，在<code>C:\OpenSSL-Win64\bin</code>中打开<code>cmd</code>，准备执行上面三条语句。但是第一条语句就报了错，发现无法生成<em>.cer和</em>.req文件（估计是软件版本问题导致的），又是百度，又是谷歌，还是Stack Overflow的，消耗了不少时间。最后根据以下报错信息：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Subject does not start with <span class="string">"/"</span></span><br><span class="line">Problems makeing certificate request</span><br></pre></td></tr></table></figure></p>
+<p>我尝试着将<code>-subj</code>参数删除，执行了一次，提示我输入<code>Localhost.cnf</code>文件中<code>req_distinguished_name</code>的配置项（按照提示重新输入一次就可以了）。以此执行如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ openssl req -x509 -newkey rsa:2048 -out LocalhostCA.cer -outform PEM -keyout LocalhostCA.pvk -days 10000 -verbose -config LocalhostCA.cnf -nodes -sha256</span><br></pre></td></tr></table></figure></p>
+<p>同理，第二条语句也把<code>-subj</code>参数删除，执行过程中需要输入一些参数，最后执行成功。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ openssl req -newkey rsa:2048 -keyout Localhost.pvk -out Localhost.req -sha256 -nodes</span><br></pre></td></tr></table></figure></p>
+<p>第三条语句没有<code>-subj</code>选项，直接执行即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ openssl x509 -req -CA LocalhostCA.cer -CAkey LocalhostCA.pvk -in Localhost.req -out Localhost.cer -days 10000 -extfile Localhost.ext -sha256 -set_serial 0x1111</span><br></pre></td></tr></table></figure></p>
+<h3 id="4-2-配置证书和Nginx"><a href="#4-2-配置证书和Nginx" class="headerlink" title="4.2 配置证书和Nginx"></a>4.2 配置证书和Nginx</h3><p>将生成的Localhost.cer和Localhost.pvk文件复制到Nginx的conf目录中。<br>修改nginx.conf文件，添加如下内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># HTTPS server</span><br><span class="line">server&#123;  </span><br><span class="line">    listen 443;  </span><br><span class="line">    server_name localhost;  </span><br><span class="line">    ssl on;</span><br><span class="line">    ssl_certificate Localhost.cer;  </span><br><span class="line">    ssl_certificate_key Localhost.pvk; </span><br><span class="line">    ssl_session_timeout 5m;  </span><br><span class="line">    ssl_protocols SSLv2 SSLv3 TLSv1;  </span><br><span class="line">    ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;  </span><br><span class="line">    ssl_prefer_server_ciphers on;  </span><br><span class="line">    add_header &apos;Access-Control-Allow-Headers&apos; &apos;Content-Type&apos;;  </span><br><span class="line">    add_header &apos;Access-Control-Allow-Origin&apos; &apos;*&apos;;  </span><br><span class="line">    add_header &apos;Access-Control-Allow-Methods&apos; &apos;GET&apos;;  </span><br><span class="line">     </span><br><span class="line">    location / &#123;  </span><br><span class="line">        root html; </span><br><span class="line">        index index.html 50x.html;  </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="4-3-重启Nginx"><a href="#4-3-重启Nginx" class="headerlink" title="4.3 重启Nginx"></a>4.3 重启Nginx</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ nginx -s reload</span><br></pre></td></tr></table></figure>
+<h3 id="4-4-导入证书"><a href="#4-4-导入证书" class="headerlink" title="4.4 导入证书"></a>4.4 导入证书</h3><p>在IE中打开Internet选项 -&gt; 内容 -&gt; 证书 -&gt; 受信任的根证书颁发机构  -&gt; 导入 -&gt; LocalhostCA.cer。<br>尝试访问<code>https://localhost/arcgis_js_api/library/4.6/init.js</code>，在网址的左侧显示一个小绿锁则表示HTTPS配置成功，自此所有配置过程都已经完成。</p>
+<p>如果有不明白的，欢迎留言或者给我 <a href="mailto:kongbin0325@hotmail.com" target="_blank" rel="noopener">发邮件[Send Email]</a></p>
+<p><hr></p>
+<div style="text-align: center;font-weight: bold;"><br>    全文重点来了！<br></div>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 值此3.8女神节，祝福所有的女性：</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; forever; i++) &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Happiness Everyday!"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<div style="text-align: center;padding: 0; margin: 0;"><br>    <img class="wechat-qrcode" src="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png" alt="关注公众号"><br></div>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/2692255794/">使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 ibrucekong 的个人博客">ibrucekong</a></p>
+        <p><span class="post-count">文章字数:</span>1,309字</p>
+        <p><span class="post-count">阅读时长:</span>6分钟</p>
+        <p><span class="post-count">全站字数:</span>35.7k字</p>
+        <p><span>发布时间:</span>2018年03月08日 - 14时12分</p>
+        <p><span>最后更新:</span>2018年03月08日 - 14时12分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/2692255794/" title="使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6">http://ibrucekong.github.io/posts/2692255794/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://ibrucekong.github.io/posts/2692255794/　　作者: ibrucekong" title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target="_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/posts/3337762157/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          从零开始搭建自己的博客天地(下)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/posts/224769818/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">吾爱破解论坛2018年3月13日十周年开放注册通知</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-背景"><span class="toc-number">1.</span> <span class="toc-text">1 背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-准备工作"><span class="toc-number">2.</span> <span class="toc-text">2 准备工作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-安装配置"><span class="toc-number">3.</span> <span class="toc-text">3 安装配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Nginx"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 Nginx</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-OpenSSL"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 OpenSSL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-ArcGIS-for-JavaScript-4-6"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 ArcGIS for JavaScript 4.6</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-证书的生成与配置"><span class="toc-number">4.</span> <span class="toc-text">4 证书的生成与配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1生成证书"><span class="toc-number">4.1.</span> <span class="toc-text">4.1生成证书</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-配置证书和Nginx"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 配置证书和Nginx</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-重启Nginx"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 重启Nginx</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-导入证书"><span class="toc-number">4.4.</span> <span class="toc-text">4.4 导入证书</span></a></li></ol></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
+<script src="/js/jjquery.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+
+    
+      <section id="comments" style="margin: 1px 30px;">
+	<!-- 来必力City版安装代码 -->
+	<div id="lv-container" data-id="city" data-uid="MTAyMC8zMDQ1Ny83MDEx" style="padding: 1px 10px;border-radius: 20px;">
+	<script type="text/javascript">
+	   (function(d, s) {
+	       var j, e = d.getElementsByTagName(s)[0];
+
+	       if (typeof LivereTower === 'function') { return; }
+
+	       j = d.createElement(s);
+	       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+	       j.async = true;
+
+	       e.parentNode.insertBefore(j, e);
+	   })(document, 'script');
+	</script>
+	<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+	</div>
+	<!-- City版安装代码已完成 -->
+</section>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/3337762157/" title="上一篇: 从零开始搭建自己的博客天地(下)">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/posts/224769818/" title="下一篇: 吾爱破解论坛2018年3月13日十周年开放注册通知">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/3256505474/">吾爱破解论坛2018年11月11日开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4186109665/">济南的中秋</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3230248873/">BIMserver入门笔记 - 02登录及模型展示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3869274485/">BIMserver入门笔记 - 01环境搭建、数据导入及预览</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1380263657/">前端地图应用中几种监听事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1077207737/">IE和Chrome带有多个参数的互相跳转</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/289005530/">在Chrome中调试Ionic的Android应用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1652333246/">入坑公路车</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2994729501/">Ionic使用百度地图弹窗并响应点击事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2639421812/">吾爱破解论坛2018年7月21日暑假开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3249349784/">在Linux中解决跨网段访问服务</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1224017506/">在Linux中如何使用SCP快速拷贝数据</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3337762157/">从零开始搭建自己的博客天地(下)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2692255794/">使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/224769818/">吾爱破解论坛2018年3月13日十周年开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/547195145/">Nginx学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3718307484/">Cesium简介与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3667539278/">从零开始搭建自己的博客天地(上)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1297890910/">使用BeautifulSoup和pdfkit爬取菜鸟教程到pdf文件!</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1533523788/">Python3入门学习—02条件循环语句</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/58933767/">Python3入门学习—01环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3412983070/">Node安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2220897336/">Git 中级用户的25个提示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1500121752/">控制台，终端，tty，shell等概念的区别</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3490671754/">如何编写高质量的程序</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/417703024/">Markdown学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1191879354/">Android NDK学习入门教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4243991381/">基于GIS的团队管理系统的简介</a></li></ul>
+    <script src="/js/jjquery.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+	<script>
+		(function(){
+		    var bp = document.createElement('script');
+		    var curProtocol = window.location.protocol.split(':')[0];
+		    if (curProtocol === 'https') {
+		        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+		    }
+		    else {
+		        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		    }
+		    var s = document.getElementsByTagName("script")[0];
+		    s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+    <div class="outer">
+        <div id="visit">
+            <div class="footer-left">
+                &copy; 2019 ibrucekong
+            </div>
+            <div class="footer-center">
+				<span id="span_dt_dt"></span>
+            </div>
+            <div class="footer-right">
+                <span style="cursor:url('/mouse/hand.cur'),auto;" title="https://hexo.io"><a href="https://hexo.io" target="_blank">Hexo </a></span><span>Theme By </span><span style="cursor:url('/mouse/hand.cur'),auto;" title="maochunguang"><a href="https://github.com/maochunguang/black-blue" target="_blank">maochunguang</a></span>
+            </div>
+            <!--<div id="jbgsn" class="footer-right" style="cursor:url('./mouse/hand.cur'),auto;display: none;">
+            	<span  style="cursor:url('./mouse/hand.cur'),auto;" title="Love Story">Love Story</span>
+            </div>-->
+        </div>
+    </div>
+</footer>
+<script language="javascript">
+	function show_date_time(){
+		window.setTimeout("show_date_time()", 1000);
+		BirthDay=new Date("3/25/1990 08:00:00");//这个日期是可以修改的
+		today=new Date();
+		timeold=(today.getTime()-BirthDay.getTime());//其实仅仅改了这里
+		sectimeold=timeold/1000
+		secondsold=Math.floor(sectimeold);
+		msPerDay=24*60*60*1000
+		e_daysold=timeold/msPerDay
+		daysold=Math.floor(e_daysold);
+		e_hrsold=(e_daysold-daysold)*24;
+		hrsold=Math.floor(e_hrsold);
+		e_minsold=(e_hrsold-hrsold)*60;
+		minsold=Math.floor((e_hrsold-hrsold)*60);
+		seconds=Math.floor((e_minsold-minsold)*60);
+		span_dt_dt.innerHTML="博主已悄悄呼吸了"+daysold+"天"+hrsold+"小时"+minsold+"分"+seconds+"秒";
+	}
+	show_date_time();
+//	$("#jbgsn").click(function(e){
+//		self.location.href="/love-story.html";
+//	});
+</script>
+    </div>
+    <script src="/js/jjquery.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundimg = "url(/img/bg-left.jpg)";
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "https://hm.baidu.com/hm.js?1c15451748af3d908f1a66a51c683af5";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<!--<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>-->
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>

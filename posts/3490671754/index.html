@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="L6Lm9d5Crl">
+  
+  
+  
+  
+  <title>如何编写高质量的程序 | ibrucekong</title>
+  <meta name="keywords" content="ibrucekong,Bruce Kong,Bruce">
+  <meta name="description" content="一个坚持在Code上的少年，就算前面是风雨，也会努力拼搏，迎接彩虹！">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta baidu-gxt-verify-token="d38209b74c2782fdf74a2140c3c46e3b">
+  <meta name="description" content="学习编程： 学习任何编程语言都会有一个基本的过程，开始的时候学习基本的语法，然后学习各种库，框架，开始做各种项目。">
+<meta name="keywords" content="心得,编程语言">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何编写高质量的程序">
+<meta property="og:url" content="http://ibrucekong.github.io/posts/3490671754/index.html">
+<meta property="og:site_name" content="ibrucekong">
+<meta property="og:description" content="学习编程： 学习任何编程语言都会有一个基本的过程，开始的时候学习基本的语法，然后学习各种库，框架，开始做各种项目。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+<meta property="og:updated_time" content="2015-08-24T05:14:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何编写高质量的程序">
+<meta name="twitter:description" content="学习编程： 学习任何编程语言都会有一个基本的过程，开始的时候学习基本的语法，然后学习各种库，框架，开始做各种项目。">
+<meta name="twitter:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+  
+    <link rel="alternative" href="/atom.xml" title="ibrucekong" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <script src="/js/love.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+    
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+      console.log("Welcome to Bruce's world!——欢迎来到Bruce的世界！");
+      console.log("主页请访问：http://ibrucekong.github.io");
+  </script>
+  <script type="hidden" src="https://s4.cnzz.com/z_stat.php?id=1256273509&web_id=1256273509" language="JavaScript"></script>
+  <style>
+		body{
+			cursor:url('/mouse/arrow.cur'),auto;
+		}
+		a{
+			cursor: url('/mouse/hand.cur'),auto;
+		}
+	</style>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <script src="/js/jjquery.js"></script>
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">ibrucekong</a></h1>
+        </hgroup>
+        
+        <p class="header-subtitle">JUST DO IT</p>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder=" Search...">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives/index.html">所有文章</a></li>
+                        
+                            <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                        
+                            <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                        
+                            <li><a href="/categories/tips/index.html">学习心得</a></li>
+                        
+                            <li><a href="/about/index.html">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                            
+                                <a class="fl weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/3D-Map/" style="font-size: 10px;">3D Map</a> <a href="/tags/Android/" style="font-size: 20px;">Android</a> <a href="/tags/BIM/" style="font-size: 15px;">BIM</a> <a href="/tags/BIMserver/" style="font-size: 15px;">BIMserver</a> <a href="/tags/BeautifulSoup/" style="font-size: 10px;">BeautifulSoup</a> <a href="/tags/Blog/" style="font-size: 15px;">Blog</a> <a href="/tags/Cesium/" style="font-size: 10px;">Cesium</a> <a href="/tags/Chrome/" style="font-size: 15px;">Chrome</a> <a href="/tags/GIS/" style="font-size: 15px;">GIS</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/Hexo/" style="font-size: 15px;">Hexo</a> <a href="/tags/IE/" style="font-size: 10px;">IE</a> <a href="/tags/Ionic/" style="font-size: 15px;">Ionic</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/Nginx/" style="font-size: 15px;">Nginx</a> <a href="/tags/Node/" style="font-size: 10px;">Node</a> <a href="/tags/OpenSSL/" style="font-size: 10px;">OpenSSL</a> <a href="/tags/Pdfkit/" style="font-size: 10px;">Pdfkit</a> <a href="/tags/Python3/" style="font-size: 20px;">Python3</a> <a href="/tags/Route/" style="font-size: 10px;">Route</a> <a href="/tags/SCP/" style="font-size: 10px;">SCP</a> <a href="/tags/git/" style="font-size: 15px;">git</a> <a href="/tags/中秋/" style="font-size: 10px;">中秋</a> <a href="/tags/事件监听/" style="font-size: 10px;">事件监听</a> <a href="/tags/代理/" style="font-size: 15px;">代理</a> <a href="/tags/公路车/" style="font-size: 10px;">公路车</a> <a href="/tags/写作/" style="font-size: 10px;">写作</a> <a href="/tags/吾爱破解/" style="font-size: 20px;">吾爱破解</a> <a href="/tags/心得/" style="font-size: 10px;">心得</a> <a href="/tags/控制台/" style="font-size: 10px;">控制台</a> <a href="/tags/活动/" style="font-size: 20px;">活动</a> <a href="/tags/济南/" style="font-size: 10px;">济南</a> <a href="/tags/点击事件/" style="font-size: 10px;">点击事件</a> <a href="/tags/爬虫/" style="font-size: 10px;">爬虫</a> <a href="/tags/版本管理/" style="font-size: 15px;">版本管理</a> <a href="/tags/百度地图/" style="font-size: 10px;">百度地图</a> <a href="/tags/终端/" style="font-size: 10px;">终端</a> <a href="/tags/编程语言/" style="font-size: 10px;">编程语言</a> <a href="/tags/自行车/" style="font-size: 10px;">自行车</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/跳转/" style="font-size: 10px;">跳转</a>
+                    </div>
+                </section>
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://weibo.com/kongbin1246053598de">新浪</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://www.jianshu.com/users/4bd3b777695a/timeline">简书</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://blog.brucekong.com">博客</a>
+                    
+                    </div>
+                </section>
+                
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">ibrucekong</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">ibrucekong</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">JUST DO IT</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives/index.html">所有文章</a></li>
+                
+                    <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                
+                    <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                
+                    <li><a href="/categories/tips/index.html">学习心得</a></li>
+                
+                    <li><a href="/about/index.html">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                    
+                        <a class="weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-how-to-write-a-high-quality-program" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/3490671754/" class="article-date">
+      <time datetime="2015-08-24T05:14:25.000Z" itemprop="datePublished">2015-08-24</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      如何编写高质量的程序
+    </h1>
+  
+
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/tips/">tips</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/心得/">心得</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编程语言/">编程语言</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><strong>学习编程：</strong></p>
+<p>学习任何编程语言都会有一个基本的过程，开始的时候学习基本的语法，然后学习各种库，框架，开始做各种项目。</p>
+<a id="more"></a>
+<h2 id="如何编写高质量的程序"><a href="#如何编写高质量的程序" class="headerlink" title="如何编写高质量的程序"></a>如何编写高质量的程序</h2><p>学习任何编程语言都会有一个基本的过程，开始的时候学习基本的语法，然后学习各种库，框架，开始做各种项目。在做项目的过程中，随着代码量的增加，我们会渐渐感到失去对程序的掌控能力，bug开始增加，牵一发而动全身，顾此失彼。这充分说明了编写高质量程序的重要性，这里的“高质量”主要指程序的正确性，可读性，可维护性。</p>
+<h2 id="什么是高质量的程序"><a href="#什么是高质量的程序" class="headerlink" title="什么是高质量的程序"></a>什么是高质量的程序</h2><p><strong>正确性</strong></p>
+<p>程序正确性的重要程度无需多言，尤其在一些特殊领域，例如芯片制造业，航天业，武器制造业，对程序正确性往往有着极其严格的要求，因为一旦程序出错，代价往往是巨大的。在这些领域，需要使用形式化方法(formal methods)来自动验证程序的正确性，也就是说你需要证明程序的正确性，而不仅仅保证程序在大多数情况下是正确的。在其它领域，对正确性没有这么高要求，形式化方法也不适用，但是我们还是需要使用其它手段，例如测试，code review等等来保证软件的正确性。</p>
+<p><strong>可读性</strong></p>
+<p>可读性可以帮助程序作者理清思路，思路清晰后，程序不容易出错。另外，其它程序员在维护你的代码时，更容易理解你的意思，方便修改bug，方便扩展。</p>
+<p>不要浪费自己的时间，更不要浪费别人的时间。</p>
+<p><strong>可维护性</strong></p>
+<p>这里的可维护性主要指程序应对变化的能力。程序在完成基本功能后，可能会发生各种改变：用户需求变了，性能达不到要求需要重新实现算法，等等。一旦程序的一个点发生改变，其它点如果也需要同时手动改变，那么程序会变的不可控制，出bug的机会会增加。想像一下，我们的程序是一个盒子，在添加新功能时，如果只需要把新模块插到一个地方，新模块就可以被系统使用，这样的程序可维护性是很高的。但是如果添加新功能时，需要把原来的程序盒子拆开，其它模块也需要相应修改，才能加入新模块，这样的程序可维护性就很差。</p>
+<h2 id="提高程序质量的重要措施"><a href="#提高程序质量的重要措施" class="headerlink" title="提高程序质量的重要措施"></a>提高程序质量的重要措施</h2><p><strong>测试</strong></p>
+<p>为什么强调先编写测试用例，再实现程序？先编写测试用例的意义在于，让编写程序的人对程序本身有更好的理解。因为你首先得明白什么样的程序是正确的，然后才能写出正确的程序。测试用例其实是对程序正确性的一种描述。</p>
+<p>为什么强调自动化测试，而不是手动测试？因为自动化测试可以增加测试的便捷度，而人们通常会更多地使用那些便捷度高的东西。我在做个人项目的时候就发现，在编写了自动测试的脚本后，我每改动一点程序，就会自动运行一下脚本，在此之前，我明知道测试很重要，但是还是不会测试的如此频繁。这样的好处是可以方便定位bug，否则在系统经过了大量改动之后，出了bug都不知道可能在哪里。</p>
+<p>在对程序进行重构时，很重要的一点就在于，一定要先写好测试用例，然后每改动一点，就自动测试一下，保证程序始终保持在可控状态。</p>
+<p><strong>良好的编程风格</strong></p>
+<p>良好的编程风格，可以增强程序的可读性，一个结构清晰的程序，你会更容易从中发现错误。另一方面，当程序发生变化时，很可能引入新的bug，良好的编程风格可以减少这种bug的出现。下面是与编程风格相关的一些措施。</p>
+<blockquote>
+<p><strong>风格指南:</strong><br>找一份你使用的编程语言的风格指南，例如Google的编程语言风格指南系列，Python的PEP8，并一直遵守这份指南的内容，如果有自动化工具帮助你保持这种风格，那再好不过。</p>
+<p><strong>最佳实践:</strong><br>寻找你所使用语言的最佳实践，他们可读性强，经过了大量实践的考验，被广泛接受，所以尽可能多地使用他们。</p>
+<p><strong>起一个好名字:</strong><br>变量，函数名，类名，都需要一个好名字。程序本身是对解决方案的一种描述，一个好的名字会增强这种描述性，也会让你的思维集中于解决方案，同时让其它人更容易理解你的解决方案。</p>
+<p><strong>不要直接使用常量:</strong><br>在程序中直接使用的常量，一般被称为 Magic Numbers， 一方面它不利于其它程序员对程序的理解，因为没有人知道这个常量代表什么。另一方面，多个常量之间可能是有关系的，直接使用常量根本反应不出这种关系。</p>
+<p><strong>同一变量名不要有多种含义:</strong><br>首先这种做法降低了可读性，一个变量前面一个含义，后面一个含义，这会给阅读程序的人带来困扰。</p>
+<p><strong>尽可能保证变量作用域小:</strong><br>尽量减少变量定义的点与变量最后一次使用的点之间的跨度，这样可以使变量与其相关代码变得紧凑，提高可读性，不用在使用变量时再去很多的地方查看其它引用。</p>
+<p><strong>保证函数短小精悍:</strong><br>过长的函数会让读者陷入细节的泥潭，还需要前后来回看才能明白前面一大段和后面一大段代码的关系。将函数分解，然后给函数起一个好名字，读者马上就能明白这段代码在做什么。</p>
+</blockquote>
+<h2 id="提高应变能力"><a href="#提高应变能力" class="headerlink" title="提高应变能力"></a>提高应变能力</h2><blockquote>
+<p>程序应对变化的能力强，可扩展性就强，也更容易在变化时保证正确性，这样的程序可维护性强。下面是一些提高程序应变能力的措施。</p>
+<p><strong>不要使用常量:</strong><br>不要使用常量的另一个原因在于常量可能变化，如果程序中多次引入了这个常量，那么一旦这个常量要发生变化，就需要同时改动许多地方，这时候，如果有些地方没有改，就会使程序不一致，可能引入bug。</p>
+<p><strong>同一变量名不要有多种含义:</strong><br>同一变量名不要有多种含义另一个原因在于，多种含义之间可能会相互影响，第一次写程序时你可能记得这些影响，但是以后对程序进行改动的时候，你可能就忘记了。例如函数内一段代码执行后，索引i 的值等于一个长度，但是这段代码后，你没有将i赋值给另一个变量len，而是直接使用它。等过一段时间后，你或者其它人修改这段程序时，很可能忘了这段代码执行后i的值需要等于一个长度，因为这是一种隐式的约定，所以很容易被忽视。</p>
+<p><strong>尽可能保证变量作用域小:</strong><br>保证变量作用域小也有利于重构。当一个函数变得很长时，你可能需要将它分解成多个函数，这时候，如果变量跨度小，就可以很方便地提取函数，不用来回查找与此函数相关的变量的引用。</p>
+<p><strong>减少代码重复:</strong><br>如果有一段代码在很多地方重复，这就告诉你，需要把他们提取成一个函数。因为代码的重复意味着这是一块独立的逻辑，独立的逻辑可以抽象成一个函数。另一方面，一旦这段逻辑需要发生变化，只需要修改这个函数就可以了，不需要把所有地方都手动修改一遍。</p>
+<p><strong>数据驱动:</strong><br>数据驱动的意思是用数据表示来代替程序逻辑。例如，我们需要一个程序，判断某个月有几天，在实现时，最好用一个数组表示各个月的天数，需要哪个月直接查询就好，而不要使用大量的if语句来作逻辑判断。这只是一个小例子，它提醒我们，如果程序中含有大量判断语句，就应该想一想，能不能用数据来驱动逻辑，这样需要修改的时候，我们直接修改数据就好，而不用修改程序逻辑。</p>
+</blockquote>
+<p>我曾经接手过一个项目，这个项目其实是一个工具集，根据用户的选择，调用不同的工具。原始的代码里，就使用了大量if语句，并且每个工具其实调用方式和代码都很相似。这样，我每次添加新工具时，就需要找到多个if语句块，作相应修改。如果用数据驱动的话，我们完全可以去掉这些if语句，在用户的选择与工具之间建立对应关系，这样每当新添加工具时，只需要把工具加到系统里，系统会根据这个表直接找到这个工具。这其实和之前举的盒子的例子很相似，添加新工具时，只需要把工具插到盒子上的槽上，根本不用打开盒子。这就大大提高了程序的可扩展性。</p>
+<h2 id="控制复杂度"><a href="#控制复杂度" class="headerlink" title="控制复杂度"></a>控制复杂度</h2><p>要保证软件的高质量，很重要的一方面在于控制复杂度。控制复杂度的一个很重要的手段在于分解复杂的事物。我们之所以觉得一个事物复杂，是因为同一时间需要关心的事情太多，把复杂事物分解后，每次我们只需要关心很少的事情，这样就控制住了复杂度。</p>
+<blockquote>
+<p>不要使函数或类过大<br>如果一个函数或类过大，他们会变得过分复杂，你同一时间需要关心许多细节。将函数或类变小之后，你的思维在一段时间内可以集中在同一个抽象层次，而不必过于深入其细节，这样更容易发现程序中的缺陷，因为你每次只需要关心很少的事情。在最高层，你只需要关心模块之间的关系，关心算法的流程，不必关心模块内部的事情。在最低层，你只需要关心一个模块内部的事情，而不必关心其它事情。</p>
+<p>不要使函数参数过多<br>函数参数过多可能说明这个函数负责了太多的事情，你需要将这个函数分解。另一方面，你需要从逻辑上考虑，这些参数是不是一个整体，如果是一个整体，那么直接传过来一个结构体，或者传过来一个对象，是不是更合适？</p>
+<p>不要使抽象层次过多<br>如果一个函数或类被分解为过多的抽象层次，在模块内部，你确实只需要关心很小的事情，但是这时候，由于模块过多，抽象层次过深，他们之间的关系又使复杂度增长起来。</p>
+</blockquote>
+<h2 id="使用自动化工具"><a href="#使用自动化工具" class="headerlink" title="使用自动化工具"></a>使用自动化工具</h2><p>自动化工具迫使我们养成良好的编程习惯，而且不容易出错。再次强调:</p>
+<p><code>工具越是使用方便，你越会频繁使用它。</code><br>所以，尽可能地让你的工具使用便捷。<br>例如，使用一些静态检测工具在编辑时自动帮助你检测程序的不良风格；使用重构工具帮助你重构；使用自动化测试工具在保存时自动运行测试等等。</p>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p>没有什么事情是一成不变的，所有的法则都需要考虑具体的情况。如果你要用一个法则，需要真正明白自己为什么要用，需要去权衡，而不要为了能用上这个法则而生搬硬套。</p>
+<p>好好问问自己：</p>
+<blockquote>
+<ul>
+<li>变化真的存在么?</li>
+<li>真的需要抽象么？</li>
+<li>真的需要面向对象么？</li>
+<li>真的xxx么？</li>
+</ul>
+</blockquote>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>这篇文章是我这段时间阅读过一些书后的想法，书目有:</p>
+<blockquote>
+<ul>
+<li>代码大全(Code Complete)</li>
+<li>重构——改善既有代码的设计(Refactoring Improving the Design of Existing Code)</li>
+<li>程序设计实践(The Proactice of Programming)</li>
+</ul>
+</blockquote>
+<p>在阅读这些书的同时，我还在维护其它人的代码，做自己的个人项目。在阅读的过程中，我会不断地想到我做的项目哪里有问题，可以用书中提到的方法去修改，因此印象深刻。这些书单纯读也非常有好处，但是如果可以结合到自己的项目中，会有更大裨益。因为只有产生了强烈的共鸣，才能保证真正理解了一个东西。</p>
+<p>上面提到的一些措施，都是我遇到过的，所以印象比较深刻，这几本书中还有大量提高程序质量的方法，我这里只是一个引子，希望给有心人打开一扇窗户。</p>
+<p>原文链接 : <a href="http://minixalpha.github.io/%E6%80%9D%E6%83%B3/2014/01/13/write_high_quality_program.html" target="_blank" rel="noopener">Minixalpha Blog</a></p>
+<div style="text-align: center;padding: 0; margin: 0;"><br>    <img class="wechat-qrcode" src="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png" alt="关注公众号"><br></div>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/3490671754/">如何编写高质量的程序</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 ibrucekong 的个人博客">ibrucekong</a></p>
+        <p><span class="post-count">文章字数:</span>3,522字</p>
+        <p><span class="post-count">阅读时长:</span>12分钟</p>
+        <p><span class="post-count">全站字数:</span>35.7k字</p>
+        <p><span>发布时间:</span>2015年08月24日 - 13时14分</p>
+        <p><span>最后更新:</span>2015年08月24日 - 13时14分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/3490671754/" title="如何编写高质量的程序">http://ibrucekong.github.io/posts/3490671754/</a>
+            <span class="copy-path" data-clipboard-text="原文: http://ibrucekong.github.io/posts/3490671754/　　作者: ibrucekong" title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target="_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/posts/1500121752/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          控制台，终端，tty，shell等概念的区别
+        
+      </div>
+    </a>
+  
+  
+    <a href="/posts/417703024/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Markdown学习入门</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#如何编写高质量的程序"><span class="toc-number">1.</span> <span class="toc-text">如何编写高质量的程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是高质量的程序"><span class="toc-number">2.</span> <span class="toc-text">什么是高质量的程序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#提高程序质量的重要措施"><span class="toc-number">3.</span> <span class="toc-text">提高程序质量的重要措施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#提高应变能力"><span class="toc-number">4.</span> <span class="toc-text">提高应变能力</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#控制复杂度"><span class="toc-number">5.</span> <span class="toc-text">控制复杂度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#使用自动化工具"><span class="toc-number">6.</span> <span class="toc-text">使用自动化工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#注意事项"><span class="toc-number">7.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考资料"><span class="toc-number">8.</span> <span class="toc-text">参考资料</span></a></li></ol>
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
+<script src="/js/jjquery.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+
+    
+      <section id="comments" style="margin: 1px 30px;">
+	<!-- 来必力City版安装代码 -->
+	<div id="lv-container" data-id="city" data-uid="MTAyMC8zMDQ1Ny83MDEx" style="padding: 1px 10px;border-radius: 20px;">
+	<script type="text/javascript">
+	   (function(d, s) {
+	       var j, e = d.getElementsByTagName(s)[0];
+
+	       if (typeof LivereTower === 'function') { return; }
+
+	       j = d.createElement(s);
+	       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+	       j.async = true;
+
+	       e.parentNode.insertBefore(j, e);
+	   })(document, 'script');
+	</script>
+	<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+	</div>
+	<!-- City版安装代码已完成 -->
+</section>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/1500121752/" title="上一篇: 控制台，终端，tty，shell等概念的区别">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/posts/417703024/" title="下一篇: Markdown学习入门">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/3256505474/">吾爱破解论坛2018年11月11日开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4186109665/">济南的中秋</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3230248873/">BIMserver入门笔记 - 02登录及模型展示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3869274485/">BIMserver入门笔记 - 01环境搭建、数据导入及预览</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1380263657/">前端地图应用中几种监听事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1077207737/">IE和Chrome带有多个参数的互相跳转</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/289005530/">在Chrome中调试Ionic的Android应用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1652333246/">入坑公路车</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2994729501/">Ionic使用百度地图弹窗并响应点击事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2639421812/">吾爱破解论坛2018年7月21日暑假开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3249349784/">在Linux中解决跨网段访问服务</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1224017506/">在Linux中如何使用SCP快速拷贝数据</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3337762157/">从零开始搭建自己的博客天地(下)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2692255794/">使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/224769818/">吾爱破解论坛2018年3月13日十周年开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/547195145/">Nginx学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3718307484/">Cesium简介与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3667539278/">从零开始搭建自己的博客天地(上)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1297890910/">使用BeautifulSoup和pdfkit爬取菜鸟教程到pdf文件!</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1533523788/">Python3入门学习—02条件循环语句</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/58933767/">Python3入门学习—01环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3412983070/">Node安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2220897336/">Git 中级用户的25个提示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1500121752/">控制台，终端，tty，shell等概念的区别</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3490671754/">如何编写高质量的程序</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/417703024/">Markdown学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1191879354/">Android NDK学习入门教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4243991381/">基于GIS的团队管理系统的简介</a></li></ul>
+    <script src="/js/jjquery.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+	<script>
+		(function(){
+		    var bp = document.createElement('script');
+		    var curProtocol = window.location.protocol.split(':')[0];
+		    if (curProtocol === 'https') {
+		        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+		    }
+		    else {
+		        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		    }
+		    var s = document.getElementsByTagName("script")[0];
+		    s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+    <div class="outer">
+        <div id="visit">
+            <div class="footer-left">
+                &copy; 2019 ibrucekong
+            </div>
+            <div class="footer-center">
+				<span id="span_dt_dt"></span>
+            </div>
+            <div class="footer-right">
+                <span style="cursor:url('/mouse/hand.cur'),auto;" title="https://hexo.io"><a href="https://hexo.io" target="_blank">Hexo </a></span><span>Theme By </span><span style="cursor:url('/mouse/hand.cur'),auto;" title="maochunguang"><a href="https://github.com/maochunguang/black-blue" target="_blank">maochunguang</a></span>
+            </div>
+            <!--<div id="jbgsn" class="footer-right" style="cursor:url('./mouse/hand.cur'),auto;display: none;">
+            	<span  style="cursor:url('./mouse/hand.cur'),auto;" title="Love Story">Love Story</span>
+            </div>-->
+        </div>
+    </div>
+</footer>
+<script language="javascript">
+	function show_date_time(){
+		window.setTimeout("show_date_time()", 1000);
+		BirthDay=new Date("3/25/1990 08:00:00");//这个日期是可以修改的
+		today=new Date();
+		timeold=(today.getTime()-BirthDay.getTime());//其实仅仅改了这里
+		sectimeold=timeold/1000
+		secondsold=Math.floor(sectimeold);
+		msPerDay=24*60*60*1000
+		e_daysold=timeold/msPerDay
+		daysold=Math.floor(e_daysold);
+		e_hrsold=(e_daysold-daysold)*24;
+		hrsold=Math.floor(e_hrsold);
+		e_minsold=(e_hrsold-hrsold)*60;
+		minsold=Math.floor((e_hrsold-hrsold)*60);
+		seconds=Math.floor((e_minsold-minsold)*60);
+		span_dt_dt.innerHTML="博主已悄悄呼吸了"+daysold+"天"+hrsold+"小时"+minsold+"分"+seconds+"秒";
+	}
+	show_date_time();
+//	$("#jbgsn").click(function(e){
+//		self.location.href="/love-story.html";
+//	});
+</script>
+    </div>
+    <script src="/js/jjquery.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundimg = "url(/img/bg-left.jpg)";
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "https://hm.baidu.com/hm.js?1c15451748af3d908f1a66a51c683af5";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<!--<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>-->
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>

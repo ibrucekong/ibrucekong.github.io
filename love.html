@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Love Story</title>
+        <link href="css/style-custom.css" rel="stylesheet" type="text/css" media="all" />
+        <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all" />
+        <link rel="icon" href="img/fav.ico" type="image/x-icon"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script type="application/x-javascript">
+            addEventListener("load", function() {
+                setTimeout(hideURLbar, 0);
+            }, false);
+
+            function hideURLbar() {
+                window.scrollTo(0, 1);
+            }
+        </script>
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/easing.js"></script>
+        <script src="/js/love.js"></script>
+        <style>
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                cursor:url('./mouse/arrow.cur'),auto;
+            }
+			a{
+				cursor: url('/mouse/hand.cur'),auto;
+			}
+            h1{
+
+            }
+            span {
+                margin: 0 0 0 0;
+                font-size: 4em;
+                font-weight: 700;
+                text-shadow: 0 5px 2px rgba(0, 0, 0, 0.25);
+                color: #2e2b34;
+            }
+            textarea{
+                cursor: default;
+                font-family: Arial;
+                font-size: 1.5em;
+                outline:none;
+                background: transparent;
+                border-style: none;
+                padding: 3% 3%;
+            }
+            .top_contains{
+                width: 100% !important;
+                height: 70% !important;
+                padding: 0 !important;
+            }
+            .left_contain{
+                float: left;
+                padding-right: 12%;
+            }
+            .right_contain{
+                float: left;
+                padding-left: 12%;
+            }
+            .center{
+                position: fixed;
+                top: 53%;
+                left: 50%;
+                width: 50%;
+                height: 50%;
+                -webkit-transform:translateX(-50%) translateY(-50%) !important;
+                text-align: center;
+                padding-top: 10%;
+            }
+            .press {
+                color: transparent;
+                background-color : black;
+                text-shadow : rgba(97, 118, 255, 1) 0 5px 6px, rgba(105, 136, 255, 1) 1px 3px 3px;
+                -webkit-background-clip : text;
+            }
+            .threed{
+            	font-size: 3rem;
+                color: #fafafa;
+                letter-spacing: 0;
+                text-shadow: 0px 1px 0px #999, 0px 2px 0px #888, 0px 3px 0px #777, 0px 4px 0px #666, 0px 5px 0px #555, 0px 6px 0px #444, 0px 7px 0px #333, 0px 8px 7px #001135 }
+        </style>
+    </head>
+
+    <body onload="printer();">
+    <div class="banner" style="height: 100%;">
+        <div class="top_contains">
+            <div class="left_contain" style="height: 100%;width: 50%;" >
+                <img src="img/heart-left.png" style="width: 60%;padding-left: 20px"/>
+            </div>
+            <div class="right_contain"  style="height: 100%;width: 50%;" >
+                <div style="right: 10px;width: 100%;height: 30%;">
+                    <div>
+                        <img src="img/heart1.png" style="width: 50%;margin-right: 24%;float: right;padding-right: 3%;"/>
+                    </div>
+                </div>
+                <div style="right: 1px;width: 100%;height: 100%;text-align: center;padding-right: 1px" >
+                    <div style="width: 60%;height: 50%;padding-left: 30%;padding-top: 5%;">
+                        <textarea cols="15" rows="10" class="threed" id="text" wrap=virtual></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="center">
+            <span style="margin: 0 0 0 0;color: #ffffff;font-size: 4em;font-weight: 700;text-shadow: 0 5px 2px rgba(0, 0, 0, 0.25);">你知道的</span>
+            <span  style="margin: 0 0 0 0;color: #ff0000;font-size: 4em;font-weight: 700;text-shadow: 0 5px 2px rgba(0, 0, 0, 0.25);">与</span>
+            <span style="margin: 0 0 0 0;color: #2e2b34;font-size: 4em;font-weight: 700;text-shadow: 0 5px 2px rgba(0, 0, 0, 0.25);">不知道的</span>
+            <div style="padding: 5px 0;">
+                <img src="img/heart-button1.png" id="heart_button" style="cursor: url('/mouse/hand.cur'),auto;" onclick="change_pic()">
+            </div>
+        </div>
+    </div>
+    <script>
+        //获取textarea对象
+        var text=document.getElementById("text");
+        function printer() {
+            setTimeout(start(),500);
+        }
+        //要输出的内容
+        var str="我住长江头，      君住长江尾。      日日思君不见君，共饮长江水。      此水几时休，      此恨何时已。      只愿君心似我心，定不负相思意。";
+        var pos=0;
+        //利用递归和setTimeout()实现文字输出
+        function start(){
+        	if(pos==0){
+        		text.value=str.substring(0,pos)+"|";
+	            //判断是否到达结尾.如果是则一秒后再来一遍.
+	            if(pos++>str.length){
+	                pos=0;
+	                //setTimeout("printer()",1000);
+	                text.value = str;
+	            }else{
+	                setTimeout("printer()",150);
+	            }
+        	}else{
+        		if (str.substring(pos-1,pos)==" "){
+        			setTimeout("printer()",150);
+        			text.value=str.substring(0,pos);
+        			pos++;
+        		}else{
+        			text.value=str.substring(0,pos)+"|";
+		            //判断是否到达结尾.如果是则一秒后再来一遍.
+		            if(pos++>str.length){
+		                pos=0;
+		                //setTimeout("printer()",1000);
+		                text.value = str;
+		            }else{
+		                setTimeout("printer()",150);
+		            }
+        		}
+        		
+        	}
+        	
+            
+        }
+        function change_pic(){
+            var imgObj = document.getElementById("heart_button");
+            if(imgObj.getAttribute("src",2)==="img/heart-button1.png"){
+                imgObj.src="img/heart-button-dark.png";
+            }else{
+                imgObj.src="img/heart-button1.png";
+            }
+            setTimeout(function (e) {
+                imgObj.src="img/heart-button1.png";
+            },100)
+            self.location.href="/love.html";
+        }
+    </script>
+    <!--    <div class="footer" style="height: 5%;">
+        <div class="container">
+            <p>Copyright &copy; 2017.ibrucekong All rights reserved.<br>
+                <a href="https://hexo.io/" target="_blank" title="Hexo">Hexo </a>
+                <a href="http://ibrucekong.github.io/" target="_blank" title="Hexo">Blog</a> By tommy
+            </p>
+        </div>
+    </div>-->
+    </body>
+
+</html>
