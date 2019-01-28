@@ -13,19 +13,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta baidu-gxt-verify-token="d38209b74c2782fdf74a2140c3c46e3b">
   <meta name="description" content="史上最好用的代码托管工具： 说到代码托管工具，Git绝对是迄今最好用的，它不论项目大小都适用，而且每一个Git克隆都是一个完整的文件库，含有全部历史记录和修订追踪能力，不依赖于网络连接或中心服务器。如果让我给你一个建议，那就是能用Git就不要使用其他（不偏心，谁用谁知道）。">
-<meta name="keywords" content="git,版本管理">
+<meta name="keywords" content="git">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Git安装与配置">
-<meta property="og:url" content="http://ibrucekong.github.io/posts/3219987363/index.html">
+<meta property="og:url" content="https://ibrucekong.github.io/posts/3219987363/index.html">
 <meta property="og:site_name" content="ibrucekong">
 <meta property="og:description" content="史上最好用的代码托管工具： 说到代码托管工具，Git绝对是迄今最好用的，它不论项目大小都适用，而且每一个Git克隆都是一个完整的文件库，含有全部历史记录和修订追踪能力，不依赖于网络连接或中心服务器。如果让我给你一个建议，那就是能用Git就不要使用其他（不偏心，谁用谁知道）。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
 <meta property="og:updated_time" content="2015-06-02T09:45:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Git安装与配置">
 <meta name="twitter:description" content="史上最好用的代码托管工具： 说到代码托管工具，Git绝对是迄今最好用的，它不论项目大小都适用，而且每一个Git克隆都是一个完整的文件库，含有全部历史记录和修订追踪能力，不依赖于网络连接或中心服务器。如果让我给你一个建议，那就是能用Git就不要使用其他（不偏心，谁用谁知道）。">
-<meta name="twitter:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
   
     <link rel="alternative" href="/atom.xml" title="ibrucekong" type="application/atom+xml">
   
@@ -284,7 +282,7 @@
         </header>                
     </div>
 </nav>
-      <div class="body-wrap"><article id="post-git-learning-introductory" class="article article-type-post" itemscope="" itemprop="blogPost">
+      <div class="body-wrap"><article id="post-git--learning-introductory" class="article article-type-post" itemscope="" itemprop="blogPost">
   
     <div class="article-meta">
       <a href="/posts/3219987363/" class="article-date">
@@ -318,7 +316,7 @@
 
         
     <div class="article-tag tagcloud">
-        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/版本管理/">版本管理</a></li></ul>
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git/">git</a></li></ul>
     </div>
 
         <div class="clearfix"></div>
@@ -339,18 +337,17 @@
 <li>支持快速切换分支方便合并，比较合并性能好；</li>
 <li>布式版本库，无单点故障，内容完整性好。</li>
 </ul>
-<h2 id="Git安装与配置"><a href="#Git安装与配置" class="headerlink" title="Git安装与配置"></a>Git安装与配置</h2><p>这里默认你已经有了Github账户，如果没有的话，点击<a href="https://github.com/join?source=header-home" target="_blank" rel="noopener">注册</a>去获取一个即可。这里以Windows演示一下Git的安装与配置(以github为例，小伙伴要看准了哦)：</p>
+<h2 id="Git安装与配置"><a href="#Git安装与配置" class="headerlink" title="Git安装与配置"></a>Git安装与配置</h2><p>这里默认你已经有了Github账户，如果没有的话，点击<a href="https://github.com/join?source=header-home" target="_blank" rel="noopener">注册</a>去获取一个即可。这里以Windows演示一下Git的安装与配置：</p>
 <ul>
 <li>下载Git，进入<a href="https://git-scm.com/" target="_blank" rel="noopener">官网</a>，下载对应平台版本的安装包；</li>
 <li>安装Git并配置环境变量；<br>安装Git时会自动将Git配置到环境变量的PATH中，打开Git Bash输入git测试一下，是否安装成功；</li>
 <li><p>打开Git Bash配置用户变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 每一行都是一条命令，其中$是命令行的意思，不需要输入$，另外每行的最后的参数也可以不加引号</span><br><span class="line">$ git config --global user.name &quot;你的GitHub用户名&quot;</span><br><span class="line">$ git config --global user.email &quot;你的GitHub注册邮箱&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;你的GitHub用户名&quot;</span><br><span class="line">git config --global user.email &quot;你的GitHub注册邮箱&quot;</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>生成SSH Key并将公钥放置到Github上；<br>在Git Bash中输入以下内容，一路回车即可；<br><code>ssh-keygen -t rsa -b 4096 -C &quot;your_email@example.com&quot;</code><br>打开<code>C:\Users\Administrator\.ssh</code>目录，用记事本打开<code>id_rsa.pub</code>文件，打开<a href="https://github.com/settings/keys" target="_blank" rel="noopener">SSH and GPG Keys</a>新建一个SSH Key，将记事本中的内容复制到Key对话框中，保存即可；</p>
 </li>
 <li>测试SSH Key是否添加成功；<br>回到系统，打开Git Bash，输入以下内容，回车：<br><code>ssh -T git@github.com</code><br>出现有 <em>You’ve successfully authenticated</em> 的字样，就表示已经添加成功。</li>
 </ul>
-<p><strong><em>这里扩展一下，如果使用的是coding.net，则需要测试 <code>$ ssh -T git@git.coding.net</code> ，如果使用的是gitee.com或者git.oschina.com，则需要测试 <code>$ ssh -T git@gitee.com</code>或者<code>$ ssh -T git@git.oschina.net</code> ，不同的域名，给予的提示就不一样了 </em></strong></p>
 <h2 id="Git最常用命令"><a href="#Git最常用命令" class="headerlink" title="Git最常用命令"></a>Git最常用命令</h2><ul>
 <li>git init</li>
 <li>git add</li>
@@ -358,15 +355,9 @@
 <li>git push</li>
 <li>git pull</li>
 <li>git clone</li>
-<li>git status</li>
-<li>git fetch</li>
-<li>git stash</li>
-<li>git stash pop</li>
-<li>git branch</li>
-<li>git checkout</li>
 </ul>
-<p>下面就可以正常使用Github了，可以使用<code>git init</code>初始化一个仓库，使用<code>git add</code>方法添加文件到仓库，使用<code>git commit</code>提交文件到本地仓库，使用<code>git push</code>提交本地仓库到Git服务器上，使用<code>git pull</code>拉取Git服务器上的代码，使用<code>git clone</code>来克隆服务器上的代码，以及其他高级用法，待后续… hava a good time！<br>如果有不明白的，欢迎留言或者给我 <a href="mailto:kongbin0325@hotmail.com" target="_blank" rel="noopener">发邮件[Send Email]</a></p>
-<div style="text-align: center;padding: 0; margin: 0;"><br>    <img class="wechat-qrcode" src="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png" alt="关注公众号"><br></div>
+<p>下面就可以正常使用Github了，可以使用<code>git init</code>初始化一个仓库，使用<code>git add</code>方法添加文件到仓库，使用<code>git commit</code>提交文件到本地仓库，使用<code>git push</code>提交本地仓库到Git服务器上，使用<code>git pull</code>拉取Git服务器上的代码，使用<code>git clone</code>来克隆服务器上的代码，以及其他高级用法，待后续… hava a good time！</p>
+
       
     </div>
     
@@ -376,14 +367,14 @@
     <div class="copyright">
         <p><span>本文标题:</span><a href="/posts/3219987363/">Git安装与配置</a></p>
         <p><span>文章作者:</span><a href="/" title="访问 ibrucekong 的个人博客">ibrucekong</a></p>
-        <p><span class="post-count">文章字数:</span>879字</p>
+        <p><span class="post-count">文章字数:</span>723字</p>
         <p><span class="post-count">阅读时长:</span>3分钟</p>
         <p><span class="post-count">全站字数:</span>35.7k字</p>
         <p><span>发布时间:</span>2015年06月02日 - 17时45分</p>
         <p><span>最后更新:</span>2015年06月02日 - 17时45分</p>
         <p>
-            <span>原始链接:</span><a class="post-url" href="/posts/3219987363/" title="Git安装与配置">http://ibrucekong.github.io/posts/3219987363/</a>
-            <span class="copy-path" data-clipboard-text="原文: http://ibrucekong.github.io/posts/3219987363/　　作者: ibrucekong" title=""></span>
+            <span>原始链接:</span><a class="post-url" href="/posts/3219987363/" title="Git安装与配置">https://ibrucekong.github.io/posts/3219987363/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://ibrucekong.github.io/posts/3219987363/　　作者: ibrucekong" title=""></span>
         </p>
         <p>
             <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target="_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
