@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="L6Lm9d5Crl">
+  
+  
+  
+  
+  <title>ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记） | ibrucekong</title>
+  <meta name="keywords" content="ibrucekong,Bruce Kong,Bruce">
+  <meta name="description" content="一个坚持在Code上的少年，就算前面是风雨，也会努力拼搏，迎接彩虹！">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta baidu-gxt-verify-token="d38209b74c2782fdf74a2140c3c46e3b">
+  <meta name="description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta name="keywords" content="ArcGIS,ArcGIS API for Javascript 4.2,WebGIS,AJS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记）">
+<meta property="og:url" content="https://ibrucekong.github.io/posts/3118632505/index.html">
+<meta property="og:site_name" content="ibrucekong">
+<meta property="og:description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170211124618151-753389095.png">
+<meta property="og:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170211132205244-2055284662.png">
+<meta property="og:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170213015641832-1292521096.png">
+<meta property="og:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+<meta property="og:updated_time" content="2019-05-10T11:21:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记）">
+<meta name="twitter:description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta name="twitter:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170211124618151-753389095.png">
+  
+    <link rel="alternative" href="/atom.xml" title="ibrucekong" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <script src="/js/love.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+    
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+      console.log("Welcome to Bruce's world!——欢迎来到Bruce的世界！");
+      console.log("主页请访问：http://ibrucekong.github.io");
+  </script>
+  <script type="hidden" src="https://s4.cnzz.com/z_stat.php?id=1256273509&web_id=1256273509" language="JavaScript"></script>
+  <style>
+		body{
+			cursor:url('/mouse/arrow.cur'),auto;
+		}
+		a{
+			cursor: url('/mouse/hand.cur'),auto;
+		}
+	</style>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <script src="/js/jjquery.js"></script>
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">ibrucekong</a></h1>
+        </hgroup>
+        
+        <p class="header-subtitle">JUST DO IT</p>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder=" Search...">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives/index.html">所有文章</a></li>
+                        
+                            <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                        
+                            <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                        
+                            <li><a href="/categories/tips/index.html">学习心得</a></li>
+                        
+                            <li><a href="/about/index.html">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                            
+                                <a class="fl weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/3D-Map/" style="font-size: 10px;">3D Map</a> <a href="/tags/AJS/" style="font-size: 20px;">AJS</a> <a href="/tags/Android/" style="font-size: 16.67px;">Android</a> <a href="/tags/ArcGIS/" style="font-size: 20px;">ArcGIS</a> <a href="/tags/ArcGIS-API-for-Javascript-4-2/" style="font-size: 20px;">ArcGIS API for Javascript 4.2</a> <a href="/tags/BIM/" style="font-size: 13.33px;">BIM</a> <a href="/tags/BIMserver/" style="font-size: 13.33px;">BIMserver</a> <a href="/tags/BeautifulSoup/" style="font-size: 10px;">BeautifulSoup</a> <a href="/tags/Blog/" style="font-size: 13.33px;">Blog</a> <a href="/tags/Cesium/" style="font-size: 10px;">Cesium</a> <a href="/tags/Chrome/" style="font-size: 13.33px;">Chrome</a> <a href="/tags/Docker/" style="font-size: 13.33px;">Docker</a> <a href="/tags/GIS/" style="font-size: 13.33px;">GIS</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/Hexo/" style="font-size: 13.33px;">Hexo</a> <a href="/tags/IE/" style="font-size: 10px;">IE</a> <a href="/tags/Ionic/" style="font-size: 13.33px;">Ionic</a> <a href="/tags/Linux/" style="font-size: 13.33px;">Linux</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/Nginx/" style="font-size: 13.33px;">Nginx</a> <a href="/tags/Node/" style="font-size: 10px;">Node</a> <a href="/tags/OpenSSL/" style="font-size: 10px;">OpenSSL</a> <a href="/tags/Pdfkit/" style="font-size: 10px;">Pdfkit</a> <a href="/tags/Python3/" style="font-size: 16.67px;">Python3</a> <a href="/tags/Route/" style="font-size: 10px;">Route</a> <a href="/tags/SCP/" style="font-size: 10px;">SCP</a> <a href="/tags/WebGIS/" style="font-size: 20px;">WebGIS</a> <a href="/tags/git/" style="font-size: 13.33px;">git</a> <a href="/tags/中秋/" style="font-size: 10px;">中秋</a> <a href="/tags/事件监听/" style="font-size: 10px;">事件监听</a> <a href="/tags/代理/" style="font-size: 13.33px;">代理</a> <a href="/tags/公路车/" style="font-size: 10px;">公路车</a> <a href="/tags/写作/" style="font-size: 10px;">写作</a> <a href="/tags/吾爱破解/" style="font-size: 16.67px;">吾爱破解</a> <a href="/tags/心得/" style="font-size: 13.33px;">心得</a> <a href="/tags/控制台/" style="font-size: 10px;">控制台</a> <a href="/tags/活动/" style="font-size: 16.67px;">活动</a> <a href="/tags/济南/" style="font-size: 10px;">济南</a> <a href="/tags/点击事件/" style="font-size: 10px;">点击事件</a> <a href="/tags/爬虫/" style="font-size: 10px;">爬虫</a> <a href="/tags/版本管理/" style="font-size: 13.33px;">版本管理</a> <a href="/tags/百度地图/" style="font-size: 10px;">百度地图</a> <a href="/tags/终端/" style="font-size: 16.67px;">终端</a> <a href="/tags/编程语言/" style="font-size: 13.33px;">编程语言</a> <a href="/tags/自行车/" style="font-size: 10px;">自行车</a> <a href="/tags/请回答1988/" style="font-size: 10px;">请回答1988</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/跳转/" style="font-size: 10px;">跳转</a> <a href="/tags/韩剧/" style="font-size: 10px;">韩剧</a>
+                    </div>
+                </section>
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://weibo.com/kongbin1246053598de">新浪</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://www.jianshu.com/users/4bd3b777695a/timeline">简书</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://blog.brucekong.com">博客</a>
+                    
+                    </div>
+                </section>
+                
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">ibrucekong</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">ibrucekong</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">JUST DO IT</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives/index.html">所有文章</a></li>
+                
+                    <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                
+                    <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                
+                    <li><a href="/categories/tips/index.html">学习心得</a></li>
+                
+                    <li><a href="/about/index.html">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                    
+                        <a class="weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-ArcGIS API for JavaScript 4.2 Tutorial 7" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/3118632505/" class="article-date">
+      <time datetime="2019-05-10T11:21:11.000Z" itemprop="datePublished">2019-05-10</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记）
+    </h1>
+  
+
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/ArcGIS-API-for-JavaScript-4-x/">ArcGIS API for JavaScript 4.x</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AJS/">AJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ArcGIS/">ArcGIS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ArcGIS-API-for-Javascript-4-2/">ArcGIS API for Javascript 4.2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WebGIS/">WebGIS</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><strong>ArcGIS API for JavaScript 4.x：</strong><br>从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。</p>
+<a id="more"></a>
+<p>本系列是转载至博客园原创作者-<a href="https://home.cnblogs.com/u/onsummer/" target="_blank" rel="noopener">秋意正寒</a>-致敬!</p>
+<p><strong>原地址：<a href="https://www.cnblogs.com/onsummer/p/6389054.html" target="_blank" rel="noopener">https://www.cnblogs.com/onsummer/p/6389054.html</a></strong></p>
+<hr>
+<p>文前说明：关于style就是页面的css暂时不做评论，因为官方给的例子的样式实在太简单了，照抄阅读即可。</p>
+<p>这篇文章有着大量AJS 4.x版本添加的内容，如监听watch、Promise对象、回调函数、异步处理等内容，原理性的东西我会在文末解释，各位看官不用担心看不懂，我尽量用通俗的语言解释这些。</p>
+<p>惯例，如果不习惯从头看到尾，可以直接跳到后面看总结。</p>
+<hr>
+<p>大家应该看过商业地图的缩略图功能吧？以度娘地图为例，在使用街景地图的时候，左下角会出现一个地点一样的2D小地图：</p>
+<p><img src="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170211124618151-753389095.png" alt="img"></p>
+<p>这个就是鹰眼功能的应用，在很多桌面软件中如Erdas、Envi，鹰眼是很常见的。</p>
+<p>//如果以下超链接日后更新了4.3或更高版本，请自行寻找4.2的sample配合本文学习~</p>
+<p>这次就解读<a href="https://developers.arcgis.com/javascript/latest/sample-code/overview-map/live/index.html" target="_blank" rel="noopener">2D overview map in SceneView</a>这个例子。</p>
+<p>源代码：<a href="view-source:https://developers.arcgis.com/javascript/latest/sample-code/overview-map/live/index.html" target="_blank" rel="noopener">点我</a></p>
+<p>其实就是一个2D的MapView在3D的SceneView的显示而已，关键就在数据的同步，官方指出了watch()方法是关键。</p>
+<p>话不多说，先上最终效果图：</p>
+<p><img src="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170211132205244-2055284662.png" alt="img"></p>
+<p>结构大概就是，大的DIV里放SceneView，小的DIV里放MapView。</p>
+<p>小的DIV里又有一个黑色的区域来标识当前SceneView的区域。小的DIV的widgets被移除。</p>
+<p>html代码为：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"viewDiv"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"overviewDiv"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"extentDiv"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>老样子，require给出引用（以前都叫第一个字符串数组参数，为了省事，以后直接叫引用了）</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(</span><br><span class="line">    [</span><br><span class="line">      <span class="string">"esri/Map"</span>,</span><br><span class="line">      <span class="string">"esri/views/SceneView"</span>,</span><br><span class="line">      <span class="string">"esri/views/MapView"</span>,</span><br><span class="line">      <span class="string">"esri/core/watchUtils"</span>,</span><br><span class="line">      <span class="string">"dojo/dom"</span>,</span><br><span class="line">      <span class="string">"dojo/promise/all"</span>,</span><br><span class="line">      <span class="string">"dojo/domReady!"</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="function"><span class="keyword">function</span>(<span class="params">Map, SceneView, MapView, watchUtils, dom, all</span>)</span>&#123;</span><br><span class="line">        <span class="comment">//你的代码</span></span><br><span class="line">    &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>重点应该是：</p>
+<p>view的watch()方法、watchUtils的when方法、view的toScreen方法、view的extent属性、view的then方法。</p>
+<hr>
+<p>既然有两个view（DIV），那么肯定要有两份map（数据）。</p>
+<p>所以第二参数（以前的文章叫函数参数，之后都叫第二参数）先将map和view定义如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> mainMap = <span class="keyword">new</span> <span class="built_in">Map</span>(&#123;</span><br><span class="line">  basemap: <span class="string">"hybrid"</span>,</span><br><span class="line">  ground: <span class="string">"world-elevation"</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">var</span> overviewMap = <span class="keyword">new</span> <span class="built_in">Map</span>(&#123;</span><br><span class="line">  basemap: <span class="string">"osm"</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">var</span> mainView = <span class="keyword">new</span> SceneView(&#123;</span><br><span class="line">  container: <span class="string">"viewDiv"</span>,</span><br><span class="line">  map: mainMap</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">var</span> mapView = <span class="keyword">new</span> MapView(&#123;</span><br><span class="line">  container: <span class="string">"overviewDiv"</span>,</span><br><span class="line">  map: overviewMap</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>mainMap、mainView是3D的，overviewMap、mapView是2D的。</p>
+<p>当然，我们看到的2D的小地图是没有放大缩小那些控件的，只需1行代码，就可以置空那些控件。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mapView.ui.components = [];</span><br></pre></td></tr></table></figure>
+<p>查阅API，可以知道ui属性是DefaultUI类，DefaultUI继承自UI类。components是字符串数组，若赋值为空数组则清空。相应的，DefaultUI类有remove和empty方法可以清除控件，就不细说了。</p>
+<p>为了便于操作，把当前区域的DIV“extendDiv”的DOM元素获取为变量：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> extentDiv = dom.byId(<span class="string">"extentDiv"</span>);</span><br></pre></td></tr></table></figure>
+<hr>
+<p>以上就完成了准备部分。</p>
+<p>接下来，数据加载完成后，就要对2D的地图和3D的地图进行“同步”了，需要用到两个view的then方法。</p>
+<blockquote>
+<p>then()方法是Promise对象的特有方法，而Promise是什么暂时无需了解，只要知道在AJS 4.x中Promise是一个很重要的东西。</p>
+<p>而且，MapView和SceneView类都继承了Promise类。不仅如此，AJS 4.x中很多方法返回的都是Promise对象。</p>
+</blockquote>
+<p>先看看mainView（3D视图）的then方法看看它做了什么：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mainView.then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  mainView.goTo(&#123;</span><br><span class="line">    center: [<span class="number">7</span>, <span class="number">46</span>],</span><br><span class="line">    scale: <span class="number">200000</span>,</span><br><span class="line">    heading: <span class="number">35</span>,</span><br><span class="line">    tilt: <span class="number">60</span></span><br><span class="line">  &#125;,</span><br><span class="line">　&#123;</span><br><span class="line">    animate: <span class="literal">true</span>,</span><br><span class="line">    duration: <span class="number">100000</span></span><br><span class="line">  &#125;)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>很好，它接受了一个参数，类型是方法。这个匿名方法干了什么呢？这不就是上一篇文章里说的缩放动画嘛！（goTo）跳过，看mapView（2D视图）的then方法看它做了什么：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">mapView.then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  mainView.watch(<span class="string">"extent"</span>, updateOverviewExtent);</span><br><span class="line">  mapView.watch(<span class="string">"extent"</span>, updateOverviewExtent);</span><br><span class="line"></span><br><span class="line">  watchUtils.when(mainView, <span class="string">"stationary"</span>, updateOverview);</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">updateOverview</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    mapView.goTo(&#123;</span><br><span class="line">      center: mainView.center,</span><br><span class="line">      scale: mainView.scale * <span class="number">2</span> * <span class="built_in">Math</span>.max(mainView.width /</span><br><span class="line">        mapView.width,</span><br><span class="line">        mainView.height / mapView.height)</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">updateOverviewExtent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> extent = mainView.extent;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> bottomLeft = mapView.toScreen(extent.xmin, extent.ymin);</span><br><span class="line">    <span class="keyword">var</span> topRight = mapView.toScreen(extent.xmax, extent.ymax);</span><br><span class="line"></span><br><span class="line">    extentDiv.style.top = topRight.y + <span class="string">"px"</span>;</span><br><span class="line">    extentDiv.style.left = bottomLeft.x + <span class="string">"px"</span>;</span><br><span class="line"></span><br><span class="line">    extentDiv.style.height = (bottomLeft.y - topRight.y) + <span class="string">"px"</span>;</span><br><span class="line">    extentDiv.style.width = (topRight.x - bottomLeft.x) + <span class="string">"px"</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>很长的样子。</p>
+<p>我慢慢解释。</p>
+<p>仍然是接受一个方法作为参数（为什么then接受的参数那么奇怪？文末会解释的）</p>
+<p><em>//题外话：在javascript里头传函数/方法是很常见的，函数/方法是js的一种变量类型，在C/C++里头可以传递函数指针，在C#里头可以传递委托变量。</em></p>
+<p>这个方法里有两个方法，命名为 updateOverview 和 updateOverviewExtent，我们根据这两个方法把这个then方法的代码拆开看，发现watch和watchUtils.when是跟这两个方法配对的。</p>
+<p>即：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//两个视图都与updateOverviewExtent方法绑定</span></span><br><span class="line">mainView.watch(<span class="string">"extent"</span>, updateOverviewExtent);</span><br><span class="line">mapView.watch(<span class="string">"extent"</span>, updateOverviewExtent);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">updateOverviewExtent</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> extent = mainView.extent;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">var</span> bottomLeft = mapView.toScreen(extent.xmin, extent.ymin);</span><br><span class="line">  <span class="keyword">var</span> topRight = mapView.toScreen(extent.xmax, extent.ymax);</span><br><span class="line"></span><br><span class="line">  extentDiv.style.top = topRight.y + <span class="string">"px"</span>;</span><br><span class="line">  extentDiv.style.left = bottomLeft.x + <span class="string">"px"</span>;</span><br><span class="line"></span><br><span class="line">  extentDiv.style.height = (bottomLeft.y - topRight.y) + <span class="string">"px"</span>;</span><br><span class="line">  extentDiv.style.width = (topRight.x - bottomLeft.x) + <span class="string">"px"</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>查阅API，得知视图的父类Accessor就支持watch方法了。值得一提的是，为了实现监听变化，AJS4.x版本专门提供了watch方法代替了以前的旧方法。</p>
+<p>watch的用法是：</p>
+<blockquote>
+<p>对象.watch(“该需要监听的属性名”, 属性变化后需要执行的回调函数);</p>
+<p>即某对象监听了它的某个属性后，这个属性一旦发生改变，就会去执行某些代码。</p>
+</blockquote>
+<p>在本例中，需要监听的是两个view对象的extent（范围）属性，一旦extent发生变化，那么updateOverviewExtent()方法就会被执行。</p>
+<p>updateOverviewExtent()方法的大概意思就是：获取3D视图的范围-&gt;获取2D视图的对角线两个角点-&gt;更改2D视图上方的区域框的DOM元素的尺寸属性（top、left、height、width）</p>
+<p>光改变区域框是不行的，还要改变2D地图的范围。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">watchUtils.when(mainView, <span class="string">"stationary"</span>, updateOverview);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">updateOverview</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  mapView.goTo(&#123;</span><br><span class="line">    center: mainView.center,</span><br><span class="line">    scale: mainView.scale * <span class="number">2</span> * <span class="built_in">Math</span>.max(mainView.width /</span><br><span class="line">      mapView.width,</span><br><span class="line">      mainView.height / mapView.height)</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>watchUtils这个对象，是位于esri/core/watchUtils模块下的一个类。</p>
+<p>它代表的含义是：监听某个对象，当这个对象的某个属性是true时，执行给定的方法。</p>
+<p>查阅API得知，这个类提供了when这个静态方法，when方法的意义是：</p>
+<p>所以，在本例中，意思就是：</p>
+<p>当mainView这个3D视图对象的”stationary”属性是true时，刷新mapView这个2D视图对象。</p>
+<p>刷新2D视图对象主要用的是上一篇中说到的goTo()方法，本例只指定了center和scale这两个属性组成的Object匿名对象。</p>
+<p>SceneView类的stationary属性是布尔类型的，意义是当前视图是否已经静止（一般视图会由鼠标拖拽或者goTo()方法产生动态效果，一旦停止下来，stationary就会变成true）</p>
+<p>总结一下。</p>
+<p>这个例子大概思路就是：</p>
+<p>·先实例化两个map和两个view，对3D的mainView在创建完成后使用then()方法缩放到指定位置。</p>
+<p>·其中，对2D的mapView创建完成后使用then()方法，分别监听两个view的extent属性，还监听3D视图的stationary属性。</p>
+<p>·当extent属性发生变化时，2D视图上方范围框先进行变化，然后2D地图紧随变化。</p>
+<p>·当3D视图静止下来后，刷新2D视图。</p>
+<p>监听还算比较好理解，需要注意的不多，注意到watch和watchUtils.when这两个方法返回的都是WatchHandle对象。待以后研究多了监听后，再仔细看看别的监听方法。</p>
+<p>难点就在于then方法。</p>
+<hr>
+<p>难点。</p>
+<p>then()方法怎么来的？这要从ES6（全名ECMAScript 2015）的新规范Promise对象说起。ECMAScript是JavaScript的标准，JS是ES的实现。</p>
+<p>Promise是什么？这个东西说复杂也很复杂，它是：</p>
+<p>为了处理异步操作多层回调函数的写法枯燥、难以阅读维护而产生的，由CommonJS社区发起的一个新规范的类。</p>
+<p>最显著的特征是它实例化的对象都有then()和catch()方法（PromiseA+规范？好像是)</p>
+<p>在AJS中，继承了Promise的类有：</p>
+<p>全部的Layers</p>
+<p>MapView、SceneView、LayerView</p>
+<p>ViewAnimation</p>
+<p>能返回Promise对象的类数不胜数。</p>
+<p>所以说，为什么要用Promise？</p>
+<p>这又要从异步操作说起了。</p>
+<p>————</p>
+<p>在AJS 4.x中，数据（Map类）和视图（View类）是分开的，3.x版本绘图渲染是Map自己完成的。</p>
+<p>由于View视图类被分离开，绘图逻辑就成了它的主要功能。当然，绘图不会很快，往往有一个过程，尤其是超大数据量的绘图的时候会有一个比较长的等待过程。</p>
+<p>所以，在JS里，较长的处理会丢给异步处理（就是同时进行好几个操作）</p>
+<p>但是但是，我们知道JS是单线程的，它是怎么处理异步处理的呢？简单说说，JS的异步处理其实是个“伪异步”，是先完成同步代码才执行异步代码的。</p>
+<p>通常，异步代码会做一些计算量比较大的事情，而同步代码则做一些不怎么耗时间的初始化工作。就是说</p>
+<p>同步代码花少量的时间去初始化一些事情，其间有n个异步任务丢给异步队列。当同步代码完成初始化后（时间短），异步代码开始按顺序执行。</p>
+<p>比如：界面的构建交给同步代码，而其间有n个后台数据交换、处理、计算的任务，就丢给异步队列去准备。当界面构造好（时间往往很短，几乎是秒速），异步代码就在后面开始执行。</p>
+<p>这先看到的界面会让体验好很多，如果异步代码（就是耗时比较大的任务）放在同步代码里执行，那么由于同步的性质，必须等待这些耗时大的任务执行完成才能继续往下走（js的特点，单线程）</p>
+<p>【在本例中】</p>
+<p>初始化view，我不知道在云端是怎么运行的（因为我用的是CDN来运行AJS程序），但是我知道view的实例化肯定是用了异步操作。</p>
+<p>即<em>先完成网页的加载（出现3D地球和2D地图，同步），再进行视图的渲染（山体拔高等，异步）。</em></p>
+<p>sometimes，异步操作当然会有一个结果，比如异步在后面花好长时间算出个矩阵，但是同步代码已经结束了，异步任务丢过去的时候结果还没出来，怎么获取它？</p>
+<p>我们可以用一个方法去获取它。这个方法，古时候叫回调函数。</p>
+<p>在没有Promise类的时候，通常用回调函数这种办法实现（也能用事件、监听）异步是很正常的一种。</p>
+<p>但是当回调函数本身也是个异步操作的时候，就会显得晕头转向。</p>
+<p><em>异步第一层，有结果要用回调函数返回给同步代码-&gt;回调函数是第二层，这个回调函数里头需要用二级回调函数返回结果给第一层-&gt;……</em></p>
+<p>举个例子：</p>
+<blockquote>
+<p>我是领导，我现在有两件事：有个事儿要做，和喝茶。</p>
+<p>这两件事不冲突，虽然这个事儿很无聊，耗时大（如文字录入）。</p>
+<p>所以我把这个事儿丢给经理（异步第一层），我继续喝茶（同步）</p>
+<p>异步第一层就是经理要做这个事，但是这个事情绝大部分是无聊的，最后的整理比较简单。</p>
+<p>所以经理就把这个无聊的部分丢给职员（异步第二层），等待职员把这部分做完的同时，也去喝茶（同步）。</p>
+<p>于是，职员的结果就是二级回调函数，职员把结果完成后，“回调”给经理。</p>
+<p>经理拿着职员的结果整理好，“回调”给领导。（第二层异步完成）</p>
+<p>此时领导茶已经喝完了（同步完成），而任务也完成了（第一层异步完成）。</p>
+</blockquote>
+<p>这里如果用老的写法将会非常的烦，如果用Promise的then写法就是</p>
+<blockquote>
+<p>领导要做事儿.then(function(){让经理去做})</p>
+<p>.then(function(){让职工做});</p>
+</blockquote>
+<p>链式写法，简单，容易看，也容易维护。</p>
+<p>then里面的function就是回调函数，告诉异步任务完成后，要怎么处理异步结果的一段代码。</p>
+<p>最后看看then方法的语法：</p>
+<blockquote>
+<p>then(function resolve, function rejected);</p>
+</blockquote>
+<p>我们一般只用前一个参数，即异步成功要怎么处理。而后一个参数是异步任务处理失败后要做什么。</p>
+<p>甚至AJS官方还给出了处理中要做什么的第三个参数…这个就不说那么多了。</p>
+<p>——</p>
+<p>大概清楚是这么个过程后，我们知道View对象是Promise对象（继承），而且有异步操作的过程。</p>
+<p>所以，mainView.then(function(){…});的意义就是</p>
+<p>当3D视图在服务器端异步操作成功后，使用goTo()缩放到指定的位置。</p>
+<p>文末，我还想说说监听，监听在AJS 3.x版本里是通过事件完成的，而AJS 4.x全新使用了watch一派写法。有关这些可以参考AJS 4.2的Guide文档。</p>
+<p>最后的最后，关于异步和回调函数部分我也是学了一天后才给出的模糊定义，希望大家能看懂吧…我也不是很能理解，官方给的多层then()是这样的：</p>
+<p><img src="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170213015641832-1292521096.png" alt="img"></p>
+<p>出处：<a href="https://developers.arcgis.com/javascript/latest/guide/working-with-promises/index.html" target="_blank" rel="noopener">点我</a></p>
+<p>then里头当然是方法，无参的。只有子一层的结果完成的时候，父一层的then才能凭借子一层的结果的回调完成异步。</p>
+<p>给一些我阅读中觉得不错的对异步、回调函数讲解的文章：</p>
+<blockquote>
+<p><a href="http://www.cnblogs.com/lvdabao/p/es6-promise-1.html" target="_blank" rel="noopener">大白话讲解Promise</a></p>
+<p><a href="http://es6.ruanyifeng.com/#docs/promise" target="_blank" rel="noopener">ECMAScript 6入门</a></p>
+<p><a href="http://www.cnblogs.com/fliu/articles/5246113.html" target="_blank" rel="noopener">Javascript异步编程的4种方法</a></p>
+<p><a href="https://zhidao.baidu.com/question/1960024181274839300.html?fr=ala&amp;word=JavaScript为什么需要回调&amp;device=mobile&amp;ssid=0&amp;from=2001a&amp;uid=0&amp;pu=usm@0,sz@320_1003,ta@iphone_2_6.0_1_10.9&amp;bd_page_type=1&amp;baiduid=16B0F240A58D2AE4A6FDFB8BF05431C1&amp;tj=zhidao_2_0_10_l1" target="_blank" rel="noopener">百度知道-JS中回调函数怎么理解</a></p>
+<p><a href="http://www.cnblogs.com/chrischjh/p/4648395.html" target="_blank" rel="noopener">Javascript异步编程之—异步原理</a></p>
+<p><a href="http://blog.csdn.net/liwusen/article/details/54142748" target="_blank" rel="noopener">JS中的回调函数，以及ES6中通过promise处理回调</a></p>
+</blockquote>
+<div style="text-align: center;padding: 0; margin: 0;"><br>    <img class="wechat-qrcode" src="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png" alt="关注公众号"><br></div>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/3118632505/">ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记）</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 ibrucekong 的个人博客">ibrucekong</a></p>
+        <p><span class="post-count">文章字数:</span>3,627字</p>
+        <p><span class="post-count">阅读时长:</span>14分钟</p>
+        <p><span class="post-count">全站字数:</span>56.5k字</p>
+        <p><span>发布时间:</span>2019年05月10日 - 19时21分</p>
+        <p><span>最后更新:</span>2019年05月10日 - 19时21分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/3118632505/" title="ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记）">https://ibrucekong.github.io/posts/3118632505/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://ibrucekong.github.io/posts/3118632505/　　作者: ibrucekong" title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target="_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/posts/1258689047/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          ArcGIS API for JavaScript 4.2学习笔记[8] 2D与3D视图同步
+        
+      </div>
+    </a>
+  
+  
+    <a href="/posts/929677808/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
+<script src="/js/jjquery.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+
+    
+      <section id="comments" style="margin: 1px 30px;">
+	<!-- 来必力City版安装代码 -->
+	<div id="lv-container" data-id="city" data-uid="MTAyMC8zMDQ1Ny83MDEx" style="padding: 1px 10px;border-radius: 20px;">
+	<script type="text/javascript">
+	   (function(d, s) {
+	       var j, e = d.getElementsByTagName(s)[0];
+
+	       if (typeof LivereTower === 'function') { return; }
+
+	       j = d.createElement(s);
+	       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+	       j.async = true;
+
+	       e.parentNode.insertBefore(j, e);
+	   })(document, 'script');
+	</script>
+	<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+	</div>
+	<!-- City版安装代码已完成 -->
+</section>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/1258689047/" title="上一篇: ArcGIS API for JavaScript 4.2学习笔记[8] 2D与3D视图同步">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/posts/929677808/" title="下一篇: ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/3310621046/">ArcGIS API for JavaScript 4.2学习笔记[12] View的弹窗（Popup）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2760278425/">ArcGIS API for JavaScript 4.2学习笔记[11] 官方第五章Popups（弹窗）概览与解释</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2160033807/">ArcGIS API for JavaScript 4.2学习笔记[10] 2D添加指北针widget、视图保存、视图padding（第二章完结）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3849267338/">ArcGIS API for JavaScript 4.2学习笔记[9] 同一种视图不同数据（Map）同步</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1258689047/">ArcGIS API for JavaScript 4.2学习笔记[8] 2D与3D视图同步</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3118632505/">ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/929677808/">ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1307306721/">ArcGIS API for JavaScript 4.2学习笔记[5] 官方API大章节概述与内容转译</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/642960823/">ArcGIS API for JavaScript 4.2学习笔记[4] 第二章其余感兴趣的例子</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/814364469/">ArcGIS API for JavaScript 4.2学习笔记[3] 官方第二章Mapping and Views概览与解释</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1049908487/">ArcGIS API for JavaScript 4.2学习笔记[2] 显示3D地图</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/161947747/">ArcGIS API for JavaScript 4.2学习笔记[1] 显示地图</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/962944946/">ArcGIS API for JavaScript 4.2学习笔记[0] AJS4.2概述、新特性、未来产品线计划与AJS笔记目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2058601592/">修改Docker下的MySQL密码校验方式</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2392351684/">Docker无法使用vim</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2464790768/">Splice和Slice引发的血案</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/139445933/">再见,我的青春 ——《请回答1988》</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3256505474/">吾爱破解论坛2018年11月11日开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4186109665/">济南的中秋</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3230248873/">BIMserver入门笔记 - 02登录及模型展示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3869274485/">BIMserver入门笔记 - 01环境搭建、数据导入及预览</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1380263657/">前端地图应用中几种监听事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1077207737/">IE和Chrome带有多个参数的互相跳转</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/289005530/">在Chrome中调试Ionic的Android应用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1652333246/">入坑公路车</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2994729501/">Ionic使用百度地图弹窗并响应点击事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2639421812/">吾爱破解论坛2018年7月21日暑假开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3249349784/">在Linux中解决跨网段访问服务</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1224017506/">在Linux中如何使用SCP快速拷贝数据</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3337762157/">从零开始搭建自己的博客天地(下)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2692255794/">使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/224769818/">吾爱破解论坛2018年3月13日十周年开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/547195145/">Nginx学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3718307484/">Cesium简介与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3667539278/">从零开始搭建自己的博客天地(上)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1297890910/">使用BeautifulSoup和pdfkit爬取菜鸟教程到pdf文件!</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1533523788/">Python3入门学习—02条件循环语句</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/58933767/">Python3入门学习—01环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3412983070/">Node安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2220897336/">Git 中级用户的25个提示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1500121752/">控制台，终端，tty，shell等概念的区别</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3490671754/">如何编写高质量的程序</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/417703024/">Markdown学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1191879354/">Android NDK学习入门教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4243991381/">基于GIS的团队管理系统的简介</a></li></ul>
+    <script src="/js/jjquery.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+	<script>
+		(function(){
+		    var bp = document.createElement('script');
+		    var curProtocol = window.location.protocol.split(':')[0];
+		    if (curProtocol === 'https') {
+		        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+		    }
+		    else {
+		        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		    }
+		    var s = document.getElementsByTagName("script")[0];
+		    s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+    <div class="outer">
+        <div id="visit">
+            <div class="footer-left">
+                &copy; 2019 ibrucekong
+            </div>
+            <div class="footer-center">
+				<span id="span_dt_dt"></span>
+            </div>
+            <div class="footer-right">
+                <span style="cursor:url('/mouse/hand.cur'),auto;" title="https://hexo.io"><a href="https://hexo.io" target="_blank">Hexo </a></span><span>Theme By </span><span style="cursor:url('/mouse/hand.cur'),auto;" title="maochunguang"><a href="https://github.com/maochunguang/black-blue" target="_blank">maochunguang</a></span>
+            </div>
+            <!--<div id="jbgsn" class="footer-right" style="cursor:url('./mouse/hand.cur'),auto;display: none;">
+            	<span  style="cursor:url('./mouse/hand.cur'),auto;" title="Love Story">Love Story</span>
+            </div>-->
+        </div>
+    </div>
+</footer>
+<script language="javascript">
+	function show_date_time(){
+		window.setTimeout("show_date_time()", 1000);
+		BirthDay=new Date("3/25/1990 08:00:00");//这个日期是可以修改的
+		today=new Date();
+		timeold=(today.getTime()-BirthDay.getTime());//其实仅仅改了这里
+		sectimeold=timeold/1000
+		secondsold=Math.floor(sectimeold);
+		msPerDay=24*60*60*1000
+		e_daysold=timeold/msPerDay
+		daysold=Math.floor(e_daysold);
+		e_hrsold=(e_daysold-daysold)*24;
+		hrsold=Math.floor(e_hrsold);
+		e_minsold=(e_hrsold-hrsold)*60;
+		minsold=Math.floor((e_hrsold-hrsold)*60);
+		seconds=Math.floor((e_minsold-minsold)*60);
+		span_dt_dt.innerHTML="博主已悄悄呼吸了"+daysold+"天"+hrsold+"小时"+minsold+"分"+seconds+"秒";
+	}
+	show_date_time();
+//	$("#jbgsn").click(function(e){
+//		self.location.href="/love-story.html";
+//	});
+</script>
+    </div>
+    <script src="/js/jjquery.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundimg = "url(/img/bg-left.jpg)";
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "https://hm.baidu.com/hm.js?1c15451748af3d908f1a66a51c683af5";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<!--<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>-->
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>

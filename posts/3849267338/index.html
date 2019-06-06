@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="L6Lm9d5Crl">
+  
+  
+  
+  
+  <title>ArcGIS API for JavaScript 4.2学习笔记[9] 同一种视图不同数据（Map）同步 | ibrucekong</title>
+  <meta name="keywords" content="ibrucekong,Bruce Kong,Bruce">
+  <meta name="description" content="一个坚持在Code上的少年，就算前面是风雨，也会努力拼搏，迎接彩虹！">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta baidu-gxt-verify-token="d38209b74c2782fdf74a2140c3c46e3b">
+  <meta name="description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta name="keywords" content="ArcGIS,ArcGIS API for Javascript 4.2,WebGIS,AJS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ArcGIS API for JavaScript 4.2学习笔记[9] 同一种视图不同数据（Map）同步">
+<meta property="og:url" content="https://ibrucekong.github.io/posts/3849267338/index.html">
+<meta property="og:site_name" content="ibrucekong">
+<meta property="og:description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170213034630800-895613805.png">
+<meta property="og:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+<meta property="og:updated_time" content="2019-05-11T02:56:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ArcGIS API for JavaScript 4.2学习笔记[9] 同一种视图不同数据（Map）同步">
+<meta name="twitter:description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta name="twitter:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170213034630800-895613805.png">
+  
+    <link rel="alternative" href="/atom.xml" title="ibrucekong" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <script src="/js/love.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+    
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+      console.log("Welcome to Bruce's world!——欢迎来到Bruce的世界！");
+      console.log("主页请访问：http://ibrucekong.github.io");
+  </script>
+  <script type="hidden" src="https://s4.cnzz.com/z_stat.php?id=1256273509&web_id=1256273509" language="JavaScript"></script>
+  <style>
+		body{
+			cursor:url('/mouse/arrow.cur'),auto;
+		}
+		a{
+			cursor: url('/mouse/hand.cur'),auto;
+		}
+	</style>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <script src="/js/jjquery.js"></script>
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">ibrucekong</a></h1>
+        </hgroup>
+        
+        <p class="header-subtitle">JUST DO IT</p>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder=" Search...">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives/index.html">所有文章</a></li>
+                        
+                            <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                        
+                            <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                        
+                            <li><a href="/categories/tips/index.html">学习心得</a></li>
+                        
+                            <li><a href="/about/index.html">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                            
+                                <a class="fl weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/3D-Map/" style="font-size: 10px;">3D Map</a> <a href="/tags/AJS/" style="font-size: 20px;">AJS</a> <a href="/tags/Android/" style="font-size: 16.67px;">Android</a> <a href="/tags/ArcGIS/" style="font-size: 20px;">ArcGIS</a> <a href="/tags/ArcGIS-API-for-Javascript-4-2/" style="font-size: 20px;">ArcGIS API for Javascript 4.2</a> <a href="/tags/BIM/" style="font-size: 13.33px;">BIM</a> <a href="/tags/BIMserver/" style="font-size: 13.33px;">BIMserver</a> <a href="/tags/BeautifulSoup/" style="font-size: 10px;">BeautifulSoup</a> <a href="/tags/Blog/" style="font-size: 13.33px;">Blog</a> <a href="/tags/Cesium/" style="font-size: 10px;">Cesium</a> <a href="/tags/Chrome/" style="font-size: 13.33px;">Chrome</a> <a href="/tags/Docker/" style="font-size: 13.33px;">Docker</a> <a href="/tags/GIS/" style="font-size: 13.33px;">GIS</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/Hexo/" style="font-size: 13.33px;">Hexo</a> <a href="/tags/IE/" style="font-size: 10px;">IE</a> <a href="/tags/Ionic/" style="font-size: 13.33px;">Ionic</a> <a href="/tags/Linux/" style="font-size: 13.33px;">Linux</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/Nginx/" style="font-size: 13.33px;">Nginx</a> <a href="/tags/Node/" style="font-size: 10px;">Node</a> <a href="/tags/OpenSSL/" style="font-size: 10px;">OpenSSL</a> <a href="/tags/Pdfkit/" style="font-size: 10px;">Pdfkit</a> <a href="/tags/Python3/" style="font-size: 16.67px;">Python3</a> <a href="/tags/Route/" style="font-size: 10px;">Route</a> <a href="/tags/SCP/" style="font-size: 10px;">SCP</a> <a href="/tags/WebGIS/" style="font-size: 20px;">WebGIS</a> <a href="/tags/git/" style="font-size: 13.33px;">git</a> <a href="/tags/中秋/" style="font-size: 10px;">中秋</a> <a href="/tags/事件监听/" style="font-size: 10px;">事件监听</a> <a href="/tags/代理/" style="font-size: 13.33px;">代理</a> <a href="/tags/公路车/" style="font-size: 10px;">公路车</a> <a href="/tags/写作/" style="font-size: 10px;">写作</a> <a href="/tags/吾爱破解/" style="font-size: 16.67px;">吾爱破解</a> <a href="/tags/心得/" style="font-size: 13.33px;">心得</a> <a href="/tags/控制台/" style="font-size: 10px;">控制台</a> <a href="/tags/活动/" style="font-size: 16.67px;">活动</a> <a href="/tags/济南/" style="font-size: 10px;">济南</a> <a href="/tags/点击事件/" style="font-size: 10px;">点击事件</a> <a href="/tags/爬虫/" style="font-size: 10px;">爬虫</a> <a href="/tags/版本管理/" style="font-size: 13.33px;">版本管理</a> <a href="/tags/百度地图/" style="font-size: 10px;">百度地图</a> <a href="/tags/终端/" style="font-size: 16.67px;">终端</a> <a href="/tags/编程语言/" style="font-size: 13.33px;">编程语言</a> <a href="/tags/自行车/" style="font-size: 10px;">自行车</a> <a href="/tags/请回答1988/" style="font-size: 10px;">请回答1988</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/跳转/" style="font-size: 10px;">跳转</a> <a href="/tags/韩剧/" style="font-size: 10px;">韩剧</a>
+                    </div>
+                </section>
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://weibo.com/kongbin1246053598de">新浪</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://www.jianshu.com/users/4bd3b777695a/timeline">简书</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://blog.brucekong.com">博客</a>
+                    
+                    </div>
+                </section>
+                
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">ibrucekong</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">ibrucekong</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">JUST DO IT</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives/index.html">所有文章</a></li>
+                
+                    <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                
+                    <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                
+                    <li><a href="/categories/tips/index.html">学习心得</a></li>
+                
+                    <li><a href="/about/index.html">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                    
+                        <a class="weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-ArcGIS API for JavaScript 4.2 Tutorial 9" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/3849267338/" class="article-date">
+      <time datetime="2019-05-11T02:56:06.000Z" itemprop="datePublished">2019-05-11</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ArcGIS API for JavaScript 4.2学习笔记[9] 同一种视图不同数据（Map）同步
+    </h1>
+  
+
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/ArcGIS-API-for-JavaScript-4-x/">ArcGIS API for JavaScript 4.x</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AJS/">AJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ArcGIS/">ArcGIS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ArcGIS-API-for-Javascript-4-2/">ArcGIS API for Javascript 4.2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WebGIS/">WebGIS</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><strong>ArcGIS API for JavaScript 4.x：</strong><br>从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。</p>
+<a id="more"></a>
+<p>本系列是转载至博客园原创作者-<a href="https://home.cnblogs.com/u/onsummer/" target="_blank" rel="noopener">秋意正寒</a>-致敬!</p>
+<p><strong>原地址：<a href="https://www.cnblogs.com/onsummer/p/6391513.html" target="_blank" rel="noopener">https://www.cnblogs.com/onsummer/p/6391513.html</a></strong></p>
+<hr>
+<p>本例子核心：对MapView对象的map属性值进行替换即可达到更改地图数据的效果。</p>
+<hr>
+<p>这个例子用的不是Map对象了，而是用的发布在服务器上的专题地图（WebMap）来加载到MapView上进行显示。</p>
+<p>在html标签中，使用了section标签，不过没什么稀奇的，就把仨按钮放一块而已。</p>
+<p>先给出预览图</p>
+<p><img src="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170213034630800-895613805.png" alt="img"></p>
+<p>三张专题地图：失踪人口密度分布、难民迁徙路线、2015年欧洲来港者。</p>
+<p>这个东西很有用，尤其是在展示同一地区的专题地图的时候，这里也展示了什么叫View，什么叫Map。</p>
+<p>因为中心点、比例尺是由View对象管控的，所以改变WebMap这个数据的时候，并不会改变位置和比例尺。</p>
+<p>我们来看代码：</p>
+<p>给出引用</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">      <span class="string">"esri/views/MapView"</span>,</span><br><span class="line">      <span class="string">"esri/WebMap"</span>,</span><br><span class="line">      <span class="string">"dojo/on"</span>,</span><br><span class="line">      <span class="string">"dojo/domReady!"</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>很清爽。</p>
+<p>既然要用到3个专题地图，那么就创建3个WebMap对象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span>(<span class="params">MapView, WebMap, on</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">var</span> webmapids = [</span><br><span class="line">        <span class="string">"ad5759bf407c4554b748356ebe1886e5"</span>,</span><br><span class="line">        <span class="string">"71ba2a96c368452bb73d54eadbd59faa"</span>,</span><br><span class="line">        <span class="string">"45ded9b3e0e145139cc433b503a8f5ab"</span></span><br><span class="line">      ];</span><br><span class="line">      <span class="comment">// 匿名函数返回一个WebMap实例</span></span><br><span class="line">      <span class="keyword">var</span> webmaps = webmapids.map(<span class="function"><span class="keyword">function</span>(<span class="params">webmapid</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> WebMap(&#123;</span><br><span class="line">          portalItem: &#123;</span><br><span class="line">            id: webmapid</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;);</span><br><span class="line">      <span class="keyword">var</span> view = <span class="keyword">new</span> MapView(&#123;</span><br><span class="line">        map: webmaps[<span class="number">0</span>],</span><br><span class="line">        container: <span class="string">"viewDiv"</span></span><br><span class="line">      &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也是很简单。</p>
+<p>给定一个webmap的ID字符串数组，每个ID是WebMap的唯一标识符。</p>
+<p>然后用Collection对象的map()方法进行遍历操作，对传入的每一个ID，匿名函数返回一个WebMap实例。</p>
+<p>如何实例化WebMap，请参考API中WebMap的构造函数。</p>
+<p>然后，实例化一个MapView，map属性给定webmaps数组的第一个元素，即第一个WebMap——失踪人口图。</p>
+<p>在实例化MapView后，就是给顶头的3个按钮添加事件了。</p>
+<p>dojo给DOM元素添加事件还记得吗？就是goTo()动画那篇文章。</p>
+<p>基本语法：</p>
+<blockquote>
+<p>on(DOM元素,事件类型,事件方法体);</p>
+</blockquote>
+<p>见下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">on(<span class="built_in">document</span>.querySelector(<span class="string">".btns"</span>), </span><br><span class="line">     <span class="string">".btn-switch:click"</span>, </span><br><span class="line">     <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">         <span class="keyword">var</span> id = event.target.getAttribute(<span class="string">"data-id"</span>);</span><br><span class="line">         <span class="keyword">if</span> (id) &#123;</span><br><span class="line">            <span class="keyword">var</span> webmap = webmaps[id];</span><br><span class="line">            view.map = webmap;</span><br><span class="line">            <span class="keyword">var</span> nodes = <span class="built_in">document</span>.querySelectorAll(<span class="string">".btn-switch"</span>);</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> idx = <span class="number">0</span>; idx &lt; nodes.length; idx++) &#123;</span><br><span class="line">                 <span class="keyword">var</span> node = nodes[idx];</span><br><span class="line">                 <span class="keyword">var</span> mapIndex = node.getAttribute(<span class="string">"data-id"</span>);</span><br><span class="line">                 <span class="keyword">if</span> (mapIndex === id) &#123;</span><br><span class="line">                      node.classList.add(<span class="string">"active-map"</span>);</span><br><span class="line">                 &#125;</span><br><span class="line">                 <span class="keyword">else</span> &#123;</span><br><span class="line">                     node.classList.remove(<span class="string">"active-map"</span>);</span><br><span class="line">                 &#125;</span><br><span class="line">           &#125;</span><br><span class="line">      &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>使用css选择器点选，即对类进行选择。btns被选中。</p>
+<p>在方法体内，先获取data-id这个自定义属性，进入if判断。</p>
+<p>先按data-id选择到序号一致的WebMap，假如data-id=“2”，则选中第三张WebMap。</p>
+<p>然后更改view.map属性为选择到的WebMap。</p>
+<p>这里，数据就替换完成了。</p>
+<p>从var nodes…到for循环体结束，讲的是：</p>
+<p>获取全部class为btn-switch的DOM元素。</p>
+<p>对这个数组进行遍历操作，若当前点击的div的data-id和遍历到的data-id三等号相同，那么就往这个DOM元素的classList添加active-map。</p>
+<p>若不，则移除active-map。</p>
+<p>意思就是说，如果点击的div就是当前地图，那么就标记为当前活动的WebMap，否则就不是活动的WebMap。</p>
+<p>————————</p>
+<p>整个程序就是这么简单，替换MapView对象的map属性值，修改DOM元素的classList和操作DOM元素而已。</p>
+<p>给出官方源代码：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"initial-scale=1,maximum-scale=1,user-scalable=no"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>Load a basic WebMap and swap with another on the same View - 4.2<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="undefined">    html,</span></span><br><span class="line"><span class="undefined">    body &#123;</span></span><br><span class="line"><span class="undefined">      font-family: sans-serif;</span></span><br><span class="line"><span class="undefined">      padding: 0;</span></span><br><span class="line"><span class="undefined">      margin: 0;</span></span><br><span class="line"><span class="undefined">      height: 100%;</span></span><br><span class="line"><span class="undefined">      width: 100%;</span></span><br><span class="line"><span class="undefined">      overflow: hidden;</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">    </span></span><br><span class="line"><span class="undefined">    #viewDiv &#123;</span></span><br><span class="line"><span class="undefined">      position: absolute;</span></span><br><span class="line"><span class="undefined">      right: 0;</span></span><br><span class="line"><span class="undefined">      left: 0;</span></span><br><span class="line"><span class="undefined">      top: 60px;</span></span><br><span class="line"><span class="undefined">      bottom: 0;</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">    </span></span><br><span class="line"><span class="undefined">    .header &#123;</span></span><br><span class="line"><span class="undefined">      position: absolute;</span></span><br><span class="line"><span class="undefined">      top: 0;</span></span><br><span class="line"><span class="undefined">      width: 100%;</span></span><br><span class="line"><span class="undefined">      height: 10%;</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">    </span></span><br><span class="line"><span class="undefined">    .btns &#123;</span></span><br><span class="line"><span class="undefined">      margin: 0 auto;</span></span><br><span class="line"><span class="undefined">      display: flex;</span></span><br><span class="line"><span class="undefined">      flex-direction: row;</span></span><br><span class="line"><span class="undefined">      justify-content: center;</span></span><br><span class="line"><span class="undefined">      align-items: center;</span></span><br><span class="line"><span class="undefined">      overflow: auto;</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">    </span></span><br><span class="line"><span class="undefined">    .btn-switch &#123;</span></span><br><span class="line"><span class="undefined">      flex-grow: 4;</span></span><br><span class="line"><span class="undefined">      background-color: rgba(34, 111, 14, 0.5);</span></span><br><span class="line"><span class="undefined">      color: #FFF;</span></span><br><span class="line"><span class="undefined">      margin: 1px;</span></span><br><span class="line"><span class="undefined">      width: 50%;</span></span><br><span class="line"><span class="undefined">      padding: 20px;</span></span><br><span class="line"><span class="undefined">      overflow: auto;</span></span><br><span class="line"><span class="undefined">      text-align: center;</span></span><br><span class="line"><span class="undefined">      cursor: pointer;</span></span><br><span class="line"><span class="undefined">      font-size: 0.7em;</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">    </span></span><br><span class="line"><span class="undefined">    .active-map &#123;</span></span><br><span class="line"><span class="undefined">      color: #fff;</span></span><br><span class="line"><span class="undefined">      background-color: rgba(34, 111, 14, 1);</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">  </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"https://js.arcgis.com/4.2/esri/css/main.css"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://js.arcgis.com/4.2/"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">    <span class="built_in">require</span>([</span></span><br><span class="line"><span class="javascript">      <span class="string">"esri/views/MapView"</span>,</span></span><br><span class="line"><span class="javascript">      <span class="string">"esri/WebMap"</span>,</span></span><br><span class="line"><span class="javascript">      <span class="string">"dojo/on"</span>,</span></span><br><span class="line"><span class="javascript">      <span class="string">"dojo/domReady!"</span></span></span><br><span class="line"><span class="javascript">    ], <span class="function"><span class="keyword">function</span>(<span class="params"></span></span></span></span><br><span class="line"><span class="undefined">      MapView, WebMap,</span></span><br><span class="line"><span class="undefined">      on</span></span><br><span class="line"><span class="undefined">    ) &#123;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="javascript">      <span class="keyword">var</span> webmapids = [</span></span><br><span class="line"><span class="javascript">        <span class="string">"ad5759bf407c4554b748356ebe1886e5"</span>,</span></span><br><span class="line"><span class="javascript">        <span class="string">"71ba2a96c368452bb73d54eadbd59faa"</span>,</span></span><br><span class="line"><span class="javascript">        <span class="string">"45ded9b3e0e145139cc433b503a8f5ab"</span></span></span><br><span class="line"><span class="undefined">      ];</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined">      /************************************************************</span></span><br><span class="line"><span class="undefined">       * Create multiple WebMap instances</span></span><br><span class="line"><span class="undefined">       ************************************************************/</span></span><br><span class="line"><span class="javascript">      <span class="keyword">var</span> webmaps = webmapids.map(<span class="function"><span class="keyword">function</span>(<span class="params">webmapid</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">return</span> <span class="keyword">new</span> WebMap(&#123;</span></span><br><span class="line"><span class="undefined">          portalItem: &#123;</span></span><br><span class="line"><span class="undefined">            id: webmapid</span></span><br><span class="line"><span class="undefined">          &#125;</span></span><br><span class="line"><span class="undefined">        &#125;);</span></span><br><span class="line"><span class="undefined">      &#125;);</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined">      /************************************************************</span></span><br><span class="line"><span class="javascript">       * Initialize the View <span class="keyword">with</span> the first WebMap</span></span><br><span class="line"><span class="undefined">       ************************************************************/</span></span><br><span class="line"><span class="javascript">      <span class="keyword">var</span> view = <span class="keyword">new</span> MapView(&#123;</span></span><br><span class="line"><span class="undefined">        map: webmaps[0],</span></span><br><span class="line"><span class="javascript">        container: <span class="string">"viewDiv"</span></span></span><br><span class="line"><span class="undefined">      &#125;);</span></span><br><span class="line"><span class="javascript">      on(<span class="built_in">document</span>.querySelector(<span class="string">".btns"</span>), <span class="string">".btn-switch:click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span></span></span></span><br><span class="line"><span class="undefined">        event) &#123;</span></span><br><span class="line"><span class="undefined">        /************************************************************</span></span><br><span class="line"><span class="javascript">         * On a button click, change the map <span class="keyword">of</span> the View</span></span><br><span class="line"><span class="undefined">         ************************************************************/</span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> id = event.target.getAttribute(<span class="string">"data-id"</span>);</span></span><br><span class="line"><span class="javascript">        <span class="keyword">if</span> (id) &#123;</span></span><br><span class="line"><span class="javascript">          <span class="keyword">var</span> webmap = webmaps[id];</span></span><br><span class="line"><span class="undefined">          view.map = webmap;</span></span><br><span class="line"><span class="javascript">          <span class="keyword">var</span> nodes = <span class="built_in">document</span>.querySelectorAll(<span class="string">".btn-switch"</span>);</span></span><br><span class="line"><span class="javascript">          <span class="keyword">for</span> (<span class="keyword">var</span> idx = <span class="number">0</span>; idx &lt; nodes.length; idx++) &#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> node = nodes[idx];</span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> mapIndex = node.getAttribute(<span class="string">"data-id"</span>);</span></span><br><span class="line"><span class="javascript">            <span class="keyword">if</span> (mapIndex === id) &#123;</span></span><br><span class="line"><span class="javascript">              node.classList.add(<span class="string">"active-map"</span>);</span></span><br><span class="line"><span class="javascript">            &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line"><span class="javascript">              node.classList.remove(<span class="string">"active-map"</span>);</span></span><br><span class="line"><span class="undefined">            &#125;</span></span><br><span class="line"><span class="undefined">          &#125;</span></span><br><span class="line"><span class="undefined">        &#125;</span></span><br><span class="line"><span class="undefined">      &#125;);</span></span><br><span class="line"><span class="undefined">    &#125;);</span></span><br><span class="line"><span class="undefined">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">section</span> <span class="attr">class</span>=<span class="string">"header"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"btns"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"btn-switch active-map"</span> <span class="attr">data-id</span>=<span class="string">"0"</span>&gt;</span>Missing Migrants<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"btn-switch"</span> <span class="attr">data-id</span>=<span class="string">"1"</span>&gt;</span>Refugee Routes<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"btn-switch"</span> <span class="attr">data-id</span>=<span class="string">"2"</span>&gt;</span>2015 European Sea Arrivals<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">section</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"viewDiv"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<div style="text-align: center;padding: 0; margin: 0;"><br>    <img class="wechat-qrcode" src="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png" alt="关注公众号"><br></div>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/3849267338/">ArcGIS API for JavaScript 4.2学习笔记[9] 同一种视图不同数据（Map）同步</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 ibrucekong 的个人博客">ibrucekong</a></p>
+        <p><span class="post-count">文章字数:</span>1,340字</p>
+        <p><span class="post-count">阅读时长:</span>6分钟</p>
+        <p><span class="post-count">全站字数:</span>56.5k字</p>
+        <p><span>发布时间:</span>2019年05月11日 - 10时56分</p>
+        <p><span>最后更新:</span>2019年05月11日 - 10时56分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/3849267338/" title="ArcGIS API for JavaScript 4.2学习笔记[9] 同一种视图不同数据（Map）同步">https://ibrucekong.github.io/posts/3849267338/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://ibrucekong.github.io/posts/3849267338/　　作者: ibrucekong" title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target="_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/posts/2160033807/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          ArcGIS API for JavaScript 4.2学习笔记[10] 2D添加指北针widget、视图保存、视图padding（第二章完结）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/posts/1258689047/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ArcGIS API for JavaScript 4.2学习笔记[8] 2D与3D视图同步</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
+<script src="/js/jjquery.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+
+    
+      <section id="comments" style="margin: 1px 30px;">
+	<!-- 来必力City版安装代码 -->
+	<div id="lv-container" data-id="city" data-uid="MTAyMC8zMDQ1Ny83MDEx" style="padding: 1px 10px;border-radius: 20px;">
+	<script type="text/javascript">
+	   (function(d, s) {
+	       var j, e = d.getElementsByTagName(s)[0];
+
+	       if (typeof LivereTower === 'function') { return; }
+
+	       j = d.createElement(s);
+	       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+	       j.async = true;
+
+	       e.parentNode.insertBefore(j, e);
+	   })(document, 'script');
+	</script>
+	<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+	</div>
+	<!-- City版安装代码已完成 -->
+</section>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/2160033807/" title="上一篇: ArcGIS API for JavaScript 4.2学习笔记[10] 2D添加指北针widget、视图保存、视图padding（第二章完结）">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/posts/1258689047/" title="下一篇: ArcGIS API for JavaScript 4.2学习笔记[8] 2D与3D视图同步">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/3310621046/">ArcGIS API for JavaScript 4.2学习笔记[12] View的弹窗（Popup）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2760278425/">ArcGIS API for JavaScript 4.2学习笔记[11] 官方第五章Popups（弹窗）概览与解释</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2160033807/">ArcGIS API for JavaScript 4.2学习笔记[10] 2D添加指北针widget、视图保存、视图padding（第二章完结）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3849267338/">ArcGIS API for JavaScript 4.2学习笔记[9] 同一种视图不同数据（Map）同步</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1258689047/">ArcGIS API for JavaScript 4.2学习笔记[8] 2D与3D视图同步</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3118632505/">ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/929677808/">ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1307306721/">ArcGIS API for JavaScript 4.2学习笔记[5] 官方API大章节概述与内容转译</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/642960823/">ArcGIS API for JavaScript 4.2学习笔记[4] 第二章其余感兴趣的例子</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/814364469/">ArcGIS API for JavaScript 4.2学习笔记[3] 官方第二章Mapping and Views概览与解释</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1049908487/">ArcGIS API for JavaScript 4.2学习笔记[2] 显示3D地图</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/161947747/">ArcGIS API for JavaScript 4.2学习笔记[1] 显示地图</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/962944946/">ArcGIS API for JavaScript 4.2学习笔记[0] AJS4.2概述、新特性、未来产品线计划与AJS笔记目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2058601592/">修改Docker下的MySQL密码校验方式</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2392351684/">Docker无法使用vim</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2464790768/">Splice和Slice引发的血案</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/139445933/">再见,我的青春 ——《请回答1988》</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3256505474/">吾爱破解论坛2018年11月11日开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4186109665/">济南的中秋</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3230248873/">BIMserver入门笔记 - 02登录及模型展示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3869274485/">BIMserver入门笔记 - 01环境搭建、数据导入及预览</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1380263657/">前端地图应用中几种监听事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1077207737/">IE和Chrome带有多个参数的互相跳转</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/289005530/">在Chrome中调试Ionic的Android应用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1652333246/">入坑公路车</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2994729501/">Ionic使用百度地图弹窗并响应点击事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2639421812/">吾爱破解论坛2018年7月21日暑假开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3249349784/">在Linux中解决跨网段访问服务</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1224017506/">在Linux中如何使用SCP快速拷贝数据</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3337762157/">从零开始搭建自己的博客天地(下)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2692255794/">使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/224769818/">吾爱破解论坛2018年3月13日十周年开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/547195145/">Nginx学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3718307484/">Cesium简介与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3667539278/">从零开始搭建自己的博客天地(上)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1297890910/">使用BeautifulSoup和pdfkit爬取菜鸟教程到pdf文件!</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1533523788/">Python3入门学习—02条件循环语句</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/58933767/">Python3入门学习—01环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3412983070/">Node安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2220897336/">Git 中级用户的25个提示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1500121752/">控制台，终端，tty，shell等概念的区别</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3490671754/">如何编写高质量的程序</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/417703024/">Markdown学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1191879354/">Android NDK学习入门教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4243991381/">基于GIS的团队管理系统的简介</a></li></ul>
+    <script src="/js/jjquery.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+	<script>
+		(function(){
+		    var bp = document.createElement('script');
+		    var curProtocol = window.location.protocol.split(':')[0];
+		    if (curProtocol === 'https') {
+		        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+		    }
+		    else {
+		        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		    }
+		    var s = document.getElementsByTagName("script")[0];
+		    s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+    <div class="outer">
+        <div id="visit">
+            <div class="footer-left">
+                &copy; 2019 ibrucekong
+            </div>
+            <div class="footer-center">
+				<span id="span_dt_dt"></span>
+            </div>
+            <div class="footer-right">
+                <span style="cursor:url('/mouse/hand.cur'),auto;" title="https://hexo.io"><a href="https://hexo.io" target="_blank">Hexo </a></span><span>Theme By </span><span style="cursor:url('/mouse/hand.cur'),auto;" title="maochunguang"><a href="https://github.com/maochunguang/black-blue" target="_blank">maochunguang</a></span>
+            </div>
+            <!--<div id="jbgsn" class="footer-right" style="cursor:url('./mouse/hand.cur'),auto;display: none;">
+            	<span  style="cursor:url('./mouse/hand.cur'),auto;" title="Love Story">Love Story</span>
+            </div>-->
+        </div>
+    </div>
+</footer>
+<script language="javascript">
+	function show_date_time(){
+		window.setTimeout("show_date_time()", 1000);
+		BirthDay=new Date("3/25/1990 08:00:00");//这个日期是可以修改的
+		today=new Date();
+		timeold=(today.getTime()-BirthDay.getTime());//其实仅仅改了这里
+		sectimeold=timeold/1000
+		secondsold=Math.floor(sectimeold);
+		msPerDay=24*60*60*1000
+		e_daysold=timeold/msPerDay
+		daysold=Math.floor(e_daysold);
+		e_hrsold=(e_daysold-daysold)*24;
+		hrsold=Math.floor(e_hrsold);
+		e_minsold=(e_hrsold-hrsold)*60;
+		minsold=Math.floor((e_hrsold-hrsold)*60);
+		seconds=Math.floor((e_minsold-minsold)*60);
+		span_dt_dt.innerHTML="博主已悄悄呼吸了"+daysold+"天"+hrsold+"小时"+minsold+"分"+seconds+"秒";
+	}
+	show_date_time();
+//	$("#jbgsn").click(function(e){
+//		self.location.href="/love-story.html";
+//	});
+</script>
+    </div>
+    <script src="/js/jjquery.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundimg = "url(/img/bg-left.jpg)";
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "https://hm.baidu.com/hm.js?1c15451748af3d908f1a66a51c683af5";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<!--<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>-->
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>

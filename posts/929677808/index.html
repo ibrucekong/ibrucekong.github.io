@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="L6Lm9d5Crl">
+  
+  
+  
+  
+  <title>ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画 | ibrucekong</title>
+  <meta name="keywords" content="ibrucekong,Bruce Kong,Bruce">
+  <meta name="description" content="一个坚持在Code上的少年，就算前面是风雨，也会努力拼搏，迎接彩虹！">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta baidu-gxt-verify-token="d38209b74c2782fdf74a2140c3c46e3b">
+  <meta name="description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta name="keywords" content="ArcGIS,ArcGIS API for Javascript 4.2,WebGIS,AJS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画">
+<meta property="og:url" content="https://ibrucekong.github.io/posts/929677808/index.html">
+<meta property="og:site_name" content="ibrucekong">
+<meta property="og:description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+<meta property="og:updated_time" content="2019-05-10T11:01:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画">
+<meta name="twitter:description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta name="twitter:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+  
+    <link rel="alternative" href="/atom.xml" title="ibrucekong" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <script src="/js/love.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+    
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+      console.log("Welcome to Bruce's world!——欢迎来到Bruce的世界！");
+      console.log("主页请访问：http://ibrucekong.github.io");
+  </script>
+  <script type="hidden" src="https://s4.cnzz.com/z_stat.php?id=1256273509&web_id=1256273509" language="JavaScript"></script>
+  <style>
+		body{
+			cursor:url('/mouse/arrow.cur'),auto;
+		}
+		a{
+			cursor: url('/mouse/hand.cur'),auto;
+		}
+	</style>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <script src="/js/jjquery.js"></script>
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">ibrucekong</a></h1>
+        </hgroup>
+        
+        <p class="header-subtitle">JUST DO IT</p>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder=" Search...">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives/index.html">所有文章</a></li>
+                        
+                            <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                        
+                            <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                        
+                            <li><a href="/categories/tips/index.html">学习心得</a></li>
+                        
+                            <li><a href="/about/index.html">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                            
+                                <a class="fl weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/3D-Map/" style="font-size: 10px;">3D Map</a> <a href="/tags/AJS/" style="font-size: 20px;">AJS</a> <a href="/tags/Android/" style="font-size: 16.67px;">Android</a> <a href="/tags/ArcGIS/" style="font-size: 20px;">ArcGIS</a> <a href="/tags/ArcGIS-API-for-Javascript-4-2/" style="font-size: 20px;">ArcGIS API for Javascript 4.2</a> <a href="/tags/BIM/" style="font-size: 13.33px;">BIM</a> <a href="/tags/BIMserver/" style="font-size: 13.33px;">BIMserver</a> <a href="/tags/BeautifulSoup/" style="font-size: 10px;">BeautifulSoup</a> <a href="/tags/Blog/" style="font-size: 13.33px;">Blog</a> <a href="/tags/Cesium/" style="font-size: 10px;">Cesium</a> <a href="/tags/Chrome/" style="font-size: 13.33px;">Chrome</a> <a href="/tags/Docker/" style="font-size: 13.33px;">Docker</a> <a href="/tags/GIS/" style="font-size: 13.33px;">GIS</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/Hexo/" style="font-size: 13.33px;">Hexo</a> <a href="/tags/IE/" style="font-size: 10px;">IE</a> <a href="/tags/Ionic/" style="font-size: 13.33px;">Ionic</a> <a href="/tags/Linux/" style="font-size: 13.33px;">Linux</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/Nginx/" style="font-size: 13.33px;">Nginx</a> <a href="/tags/Node/" style="font-size: 10px;">Node</a> <a href="/tags/OpenSSL/" style="font-size: 10px;">OpenSSL</a> <a href="/tags/Pdfkit/" style="font-size: 10px;">Pdfkit</a> <a href="/tags/Python3/" style="font-size: 16.67px;">Python3</a> <a href="/tags/Route/" style="font-size: 10px;">Route</a> <a href="/tags/SCP/" style="font-size: 10px;">SCP</a> <a href="/tags/WebGIS/" style="font-size: 20px;">WebGIS</a> <a href="/tags/git/" style="font-size: 13.33px;">git</a> <a href="/tags/中秋/" style="font-size: 10px;">中秋</a> <a href="/tags/事件监听/" style="font-size: 10px;">事件监听</a> <a href="/tags/代理/" style="font-size: 13.33px;">代理</a> <a href="/tags/公路车/" style="font-size: 10px;">公路车</a> <a href="/tags/写作/" style="font-size: 10px;">写作</a> <a href="/tags/吾爱破解/" style="font-size: 16.67px;">吾爱破解</a> <a href="/tags/心得/" style="font-size: 13.33px;">心得</a> <a href="/tags/控制台/" style="font-size: 10px;">控制台</a> <a href="/tags/活动/" style="font-size: 16.67px;">活动</a> <a href="/tags/济南/" style="font-size: 10px;">济南</a> <a href="/tags/点击事件/" style="font-size: 10px;">点击事件</a> <a href="/tags/爬虫/" style="font-size: 10px;">爬虫</a> <a href="/tags/版本管理/" style="font-size: 13.33px;">版本管理</a> <a href="/tags/百度地图/" style="font-size: 10px;">百度地图</a> <a href="/tags/终端/" style="font-size: 16.67px;">终端</a> <a href="/tags/编程语言/" style="font-size: 13.33px;">编程语言</a> <a href="/tags/自行车/" style="font-size: 10px;">自行车</a> <a href="/tags/请回答1988/" style="font-size: 10px;">请回答1988</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/跳转/" style="font-size: 10px;">跳转</a> <a href="/tags/韩剧/" style="font-size: 10px;">韩剧</a>
+                    </div>
+                </section>
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://weibo.com/kongbin1246053598de">新浪</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://www.jianshu.com/users/4bd3b777695a/timeline">简书</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://blog.brucekong.com">博客</a>
+                    
+                    </div>
+                </section>
+                
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">ibrucekong</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">ibrucekong</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">JUST DO IT</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives/index.html">所有文章</a></li>
+                
+                    <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                
+                    <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                
+                    <li><a href="/categories/tips/index.html">学习心得</a></li>
+                
+                    <li><a href="/about/index.html">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                    
+                        <a class="weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-ArcGIS API for JavaScript 4.2 Tutorial 6" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/929677808/" class="article-date">
+      <time datetime="2019-05-10T11:01:11.000Z" itemprop="datePublished">2019-05-10</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画
+    </h1>
+  
+
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/ArcGIS-API-for-JavaScript-4-x/">ArcGIS API for JavaScript 4.x</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AJS/">AJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ArcGIS/">ArcGIS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ArcGIS-API-for-Javascript-4-2/">ArcGIS API for Javascript 4.2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WebGIS/">WebGIS</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><strong>ArcGIS API for JavaScript 4.x：</strong><br>从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。</p>
+<a id="more"></a>
+<p>本系列是转载至博客园原创作者-<a href="https://home.cnblogs.com/u/onsummer/" target="_blank" rel="noopener">秋意正寒</a>-致敬!</p>
+<p><strong>原地址：<a href="https://www.cnblogs.com/onsummer/p/6388084.html" target="_blank" rel="noopener">https://www.cnblogs.com/onsummer/p/6388084.html</a></strong></p>
+<hr>
+<p>这是个很有意思的例子，不过例子给的比较复杂，需要查很多API，我会在文章最后给出关键的类和属性解释。</p>
+<p>同样发现一个很有意思的事儿：博客园似乎有爬虫，我4号发布的blogs，5号就在百度和google搜索页面上看到了转载或者复制。</p>
+<p>这篇文章逻辑组织不太好，想知道怎么做缩放动画的可以直接拉到尾部看结论。</p>
+<p>当然，这篇代码比较多，不建议手机看。</p>
+<hr>
+<p>进入正题，goTo()动画，官方的例子是在SceneView中实现的。</p>
+<p>照例，给出require的第一个字符串数组参数</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(</span><br><span class="line">　　[</span><br><span class="line">　　　　<span class="string">"esri/Map"</span>,</span><br><span class="line">　　　　<span class="string">"esri/views/SceneView"</span>,</span><br><span class="line">　　　　<span class="string">"dojo/query"</span>,</span><br><span class="line">　　　　<span class="string">"dojo/on"</span></span><br><span class="line">　　　　<span class="string">"dojo/domReady!"</span></span><br><span class="line">　　]</span><br><span class="line">　　<span class="function"><span class="keyword">function</span>(<span class="params">Map,SceneView,query,on</span>)</span></span><br><span class="line"><span class="function">　　</span>&#123;</span><br><span class="line">　　　　<span class="comment">//你的代码</span></span><br><span class="line">　　&#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p> 除了上一次熟悉的Map类和SceneView类，还多出来了query和on这俩，字面意思可以猜测是查询和事件有关。继续往下看。</p>
+<p> 为了实现动画移动摄像机，就要在html页面组织一些按钮。</p>
+<p> 于是，在html的body标签内如下组织：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"optionsDiv"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"default"</span>&gt;</span>Default flight<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"linearSlow"</span>&gt;</span>Linear slow flight<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"linearFast"</span>&gt;</span>Linear fast flight<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"expoIncrease"</span>&gt;</span>Exponentially increasing speed flight<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"fixedDuration"</span>&gt;</span>10 seconds flight<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"bounceBerlin"</span>&gt;</span>Bounce to Berlin<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"viewDiv"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>6个按钮，分别是：默认漫游、较慢漫游、较快漫游、渐渐加快漫游、10秒钟漫游、弹性缩放到柏林</p>
+<p>于是，在require的第二个函数参数里，就这样给这些button添加事件：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">funtion(<span class="built_in">Map</span>,SceneView,query,on)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 仍然是实例化两个对象，map和view</span></span><br><span class="line">    <span class="keyword">var</span> map = <span class="keyword">new</span> <span class="built_in">Map</span>(&#123;</span><br><span class="line">        basemap: <span class="string">"osm"</span></span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">var</span> view = <span class="keyword">new</span> SceneView(&#123;</span><br><span class="line">          container: <span class="string">"viewDiv"</span>,</span><br><span class="line">          map: map,</span><br><span class="line">          zoom: <span class="number">4</span></span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    on(dojo.query(<span class="string">"#default"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    &#125;);    </span><br><span class="line">    on(dojo.query(<span class="string">"#linearSlow"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    &#125;);   </span><br><span class="line">    on(dojo.query(<span class="string">"#linearFast"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    &#125;);   </span><br><span class="line">    on(dojo.query(<span class="string">"#expoIncrease"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    &#125;);   </span><br><span class="line">    on(dojo.query(<span class="string">"#fixedDuration"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    &#125;);</span><br><span class="line">    on(dojo.query(<span class="string">"#bounceBerlin"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    &#125;);</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>仅仅是一个on(dojo.query(), , function(){})方法即可实现为DOM元素添加对应的事件。这里，指定了“click”事件。</p>
+<blockquote>
+<p>关于dojo.query()，参考博客自 - <a href="http://blog.csdn.net/dojotoolkit/article/details/6265337" target="_blank" rel="noopener">http://blog.csdn.net/dojotoolkit/article/details/6265337</a></p>
+<p>这里借用了CSS的语法，dojo.query(“#default”)，这样就能获取到元素了.</p>
+<p>需要注意的是query方法获取到的是数组，如果只有一个那就是它本身。</p>
+<p>单个按ID查找DOM元素的方法是dojo.byId()</p>
+</blockquote>
+<hr>
+<p>我们继续。获取html中定义的按钮元素后添加了事件以及函数体后，自然就是为它添加动画效果了。</p>
+<p>我们取完整函数体看看，有什么异同。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">on(dojo.query(<span class="string">"#default"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          view.goTo(shiftCamera(<span class="number">60</span>));</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        on(dojo.query(<span class="string">"#linearSlow"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          view.goTo(shiftCamera(<span class="number">60</span>),</span><br><span class="line">            &#123;</span><br><span class="line">              speedFactor: <span class="number">0.1</span>,</span><br><span class="line">              easing: <span class="string">"linear"</span></span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        on(dojo.query(<span class="string">"#linearFast"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          view.goTo(shiftCamera(<span class="number">60</span>),</span><br><span class="line">            &#123;</span><br><span class="line">              speedFactor: <span class="number">6</span>,</span><br><span class="line">              easing: <span class="string">"linear"</span></span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        on(dojo.query(<span class="string">"#expoIncrease"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          view.goTo(shiftCamera(<span class="number">60</span>),</span><br><span class="line">            &#123;</span><br><span class="line">              duration: <span class="number">4000</span>,</span><br><span class="line">              easing: <span class="string">"in-expo"</span></span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        on(dojo.query(<span class="string">"#fixedDuration"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          view.goTo(shiftCamera(<span class="number">30</span>),</span><br><span class="line">          &#123;</span><br><span class="line">            duration: <span class="number">10000</span>,</span><br><span class="line">            maxDuration: <span class="number">10000</span> </span><br><span class="line">          &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 自定义时间函数体</span></span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">customEasing</span>(<span class="params">t</span>) </span>&#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="number">1</span> - <span class="built_in">Math</span>.abs(<span class="built_in">Math</span>.sin(<span class="number">-1.7</span> + t * <span class="number">4.5</span> * <span class="built_in">Math</span>.PI)) * <span class="built_in">Math</span>.pow(</span><br><span class="line">            <span class="number">0.5</span>, t * <span class="number">10</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        on(dojo.query(<span class="string">"#bounceBerlin"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          view.goTo(&#123;</span><br><span class="line">            position: &#123;</span><br><span class="line">              x: <span class="number">13.40</span>,</span><br><span class="line">              y: <span class="number">52.52</span>,</span><br><span class="line">              z: <span class="number">700000</span>,</span><br><span class="line">              spatialReference: &#123;</span><br><span class="line">                wkid: <span class="number">4326</span></span><br><span class="line">              &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            heading: <span class="number">0</span>,</span><br><span class="line">            tilt: <span class="number">0</span></span><br><span class="line">          &#125;, &#123;</span><br><span class="line">            speedFactor: <span class="number">0.3</span>,</span><br><span class="line">            easing: customEasing</span><br><span class="line">          &#125;);</span><br><span class="line">        &#125;);</span><br></pre></td></tr></table></figure>
+<p>我们可以发现有很多东西是多出来的。以默认漫游按钮为切入点，发现使用了view这个对象的goTo()方法，参数未知，看来是一个有返回值的方法。查看官方API和本例代码得知goTo()方法和shiftCamera()方法的含义：</p>
+<blockquote>
+<p>goTo()方法</p>
+<p>将视图转移到给定的目标。参数可以是：Geometry或Geometry数组、Graphic或Graphic数组、Viewpoint对象、Camera对象。</p>
+<p>本例中就使用了Camera对象（shiftCamera方法的返回值就是一个Camera）或Object对象（缩放到柏林）。</p>
+<p>以上的参数是“target”，即目标。</p>
+<p>后面还有一些可选的参数，用{}括起来作为一个Object对象：</p>
+<p>animate（boolean）、speedFactor（number类型）、duration（numer类型）、maxDuration（number类型）、easing（string或方法体）</p>
+<p>speedFactor是速度因子，很好理解，默认是1.</p>
+<p>duration是持续时间，如果有这个，那么speedFactor就会被覆盖。</p>
+<p>maxDuration是最大持续时间。</p>
+<p>easing是缓动方式。</p>
+<p>通常，easing必选，speedFactor和duration、maxDuration三选一。</p>
+<p>参数均可选。</p>
+<p>shiftCamera()方法</p>
+<p>代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; function shiftCamera(deg)&#123;</span><br><span class="line">&gt;      var camera = view.camera.clone();</span><br><span class="line">&gt;      camera.position.longitude += deg;</span><br><span class="line">&gt;      return camera;</span><br><span class="line">&gt; &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>给定一个deg（旋转角，角度制），camera的position的longitude值加上deg值。当然，deg要和longitude类型一样。</p>
+<p>position是一个空间点（Point类，继承自Geometry），longitude是经度。AJS4.2是默认用Web Mercator或WGS 84参考系的。</p>
+<p>本例中默认漫游传入了60度，即每次按按钮就会把视角旋转60度。</p>
+</blockquote>
+<hr>
+<p>我们再来看看第2-第5个漫游按钮。</p>
+<p>它们除了shiftCamera方法返回的Camera对象（target）外，还多了一个{}Object对象（option）。</p>
+<p>本例中，除了弹性缩放到柏林这个按钮外，其余都是用Camera对象和Object对象组合的方式，达到动画效果。</p>
+<p>我们当然可以直接用{}来定义一个Camera对象，就像弹性缩放到柏林这个按钮的方法体内写的。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">on(dojo.query(<span class="string">"#bounceBerlin"</span>), <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  view.goTo(&#123;             <span class="comment">//这一层大括号定义的是Camera对象</span></span><br><span class="line">    position:</span><br><span class="line">    &#123;           <span class="comment">//这一层大括号定义的是Camera的position属性</span></span><br><span class="line">      x: <span class="number">13.40</span>,</span><br><span class="line">      y: <span class="number">52.52</span>,</span><br><span class="line">      z: <span class="number">700000</span>,</span><br><span class="line">      spatialReference:</span><br><span class="line">      &#123;            <span class="comment">//这一层是空间参考</span></span><br><span class="line">        wkid: <span class="number">4326</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    heading: <span class="number">0</span>,        <span class="comment">//Camera.heading</span></span><br><span class="line">    tilt: <span class="number">0</span>           <span class="comment">//Camera.tilt</span></span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;      <span class="comment">//这一层大括号就是跟上面类似的Object对象了</span></span><br><span class="line">    speedFactor: <span class="number">0.3</span>,</span><br><span class="line">    easing: customEasing</span><br><span class="line">  &#125;);<span class="comment">//这个小括号结束的是goTo的范围</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>在Object对象中，easing参数可以指定为一个方法体（返回值是number即可）。这里customEasing就是这样的一个方法。（看起来略复杂）</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">customEasing</span>(<span class="params">t</span>) </span>&#123;</span><br><span class="line">     <span class="keyword">return</span> <span class="number">1</span> - <span class="built_in">Math</span>.abs(<span class="built_in">Math</span>.sin(<span class="number">-1.7</span> + t * <span class="number">4.5</span> * <span class="built_in">Math</span>.PI)) * <span class="built_in">Math</span>.pow(<span class="number">0.5</span>, t * <span class="number">10</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（插一句：如果在C#中，可不能随便这样给个方法名就行了，要用委托才能操作方法）</p>
+<p>关于easing这个参数的string值，大家可以自行到API查询，我简单列出这几个枚举：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">linear, in-cubic, out-cubic, in-out-cubic, in-expo, out-expo, in-out-expo</span><br></pre></td></tr></table></figure>
+<p>都可以自己试试，估计就是速度的不同而已。官方推荐小于1s的动画就用自己定义的方法体，超过1s的就用上面的枚举就行了。</p>
+<hr>
+<p>总结。</p>
+<p>地图缩放动画的核心就是view对象的goTo()方法的使用。</p>
+<p>goTo()方法在MapView类和SceneView类中都有提供，但是在它们的父类View类中没有。</p>
+<p>本文就对官方的API和例子进行学习，主要了解goTo()方法的参数的使用。</p>
+<p>用法：view对象.goTo(target, option);</p>
+<p>可以是：{定义Camera对象}+{Option参数}传入（前5个按钮）</p>
+<p>也可以是：直接传一个Camera对象+{Option参数}（最后一个按钮）。</p>
+<p>Option参数中的easing是“必选”的（不然就没动画效果了呀），speedFactor、duration、maxDuration是三选一。</p>
+<p>Camera对象可以自己用方法体返回，也可以直接用js的大括号定义。</p>
+<p>改变Camera对象的一些属性值，如经纬度，就可以达到改变视角。</p>
+<p>至于其他的，如Geometry、Graphic、Viewpoint就没有进行学习了，参考API可以解决，本文只是解读官方的例子达到入门效果。</p>
+<div style="text-align: center;padding: 0; margin: 0;"><br>    <img class="wechat-qrcode" src="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png" alt="关注公众号"><br></div>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/929677808/">ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 ibrucekong 的个人博客">ibrucekong</a></p>
+        <p><span class="post-count">文章字数:</span>1,964字</p>
+        <p><span class="post-count">阅读时长:</span>8分钟</p>
+        <p><span class="post-count">全站字数:</span>56.5k字</p>
+        <p><span>发布时间:</span>2019年05月10日 - 19时01分</p>
+        <p><span>最后更新:</span>2019年05月10日 - 19时01分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/929677808/" title="ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画">https://ibrucekong.github.io/posts/929677808/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://ibrucekong.github.io/posts/929677808/　　作者: ibrucekong" title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target="_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/posts/3118632505/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/posts/1307306721/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ArcGIS API for JavaScript 4.2学习笔记[5] 官方API大章节概述与内容转译</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
+<script src="/js/jjquery.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+
+    
+      <section id="comments" style="margin: 1px 30px;">
+	<!-- 来必力City版安装代码 -->
+	<div id="lv-container" data-id="city" data-uid="MTAyMC8zMDQ1Ny83MDEx" style="padding: 1px 10px;border-radius: 20px;">
+	<script type="text/javascript">
+	   (function(d, s) {
+	       var j, e = d.getElementsByTagName(s)[0];
+
+	       if (typeof LivereTower === 'function') { return; }
+
+	       j = d.createElement(s);
+	       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+	       j.async = true;
+
+	       e.parentNode.insertBefore(j, e);
+	   })(document, 'script');
+	</script>
+	<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+	</div>
+	<!-- City版安装代码已完成 -->
+</section>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/3118632505/" title="上一篇: ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记）">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/posts/1307306721/" title="下一篇: ArcGIS API for JavaScript 4.2学习笔记[5] 官方API大章节概述与内容转译">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/3310621046/">ArcGIS API for JavaScript 4.2学习笔记[12] View的弹窗（Popup）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2760278425/">ArcGIS API for JavaScript 4.2学习笔记[11] 官方第五章Popups（弹窗）概览与解释</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2160033807/">ArcGIS API for JavaScript 4.2学习笔记[10] 2D添加指北针widget、视图保存、视图padding（第二章完结）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3849267338/">ArcGIS API for JavaScript 4.2学习笔记[9] 同一种视图不同数据（Map）同步</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1258689047/">ArcGIS API for JavaScript 4.2学习笔记[8] 2D与3D视图同步</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3118632505/">ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/929677808/">ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1307306721/">ArcGIS API for JavaScript 4.2学习笔记[5] 官方API大章节概述与内容转译</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/642960823/">ArcGIS API for JavaScript 4.2学习笔记[4] 第二章其余感兴趣的例子</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/814364469/">ArcGIS API for JavaScript 4.2学习笔记[3] 官方第二章Mapping and Views概览与解释</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1049908487/">ArcGIS API for JavaScript 4.2学习笔记[2] 显示3D地图</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/161947747/">ArcGIS API for JavaScript 4.2学习笔记[1] 显示地图</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/962944946/">ArcGIS API for JavaScript 4.2学习笔记[0] AJS4.2概述、新特性、未来产品线计划与AJS笔记目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2058601592/">修改Docker下的MySQL密码校验方式</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2392351684/">Docker无法使用vim</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2464790768/">Splice和Slice引发的血案</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/139445933/">再见,我的青春 ——《请回答1988》</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3256505474/">吾爱破解论坛2018年11月11日开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4186109665/">济南的中秋</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3230248873/">BIMserver入门笔记 - 02登录及模型展示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3869274485/">BIMserver入门笔记 - 01环境搭建、数据导入及预览</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1380263657/">前端地图应用中几种监听事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1077207737/">IE和Chrome带有多个参数的互相跳转</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/289005530/">在Chrome中调试Ionic的Android应用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1652333246/">入坑公路车</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2994729501/">Ionic使用百度地图弹窗并响应点击事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2639421812/">吾爱破解论坛2018年7月21日暑假开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3249349784/">在Linux中解决跨网段访问服务</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1224017506/">在Linux中如何使用SCP快速拷贝数据</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3337762157/">从零开始搭建自己的博客天地(下)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2692255794/">使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/224769818/">吾爱破解论坛2018年3月13日十周年开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/547195145/">Nginx学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3718307484/">Cesium简介与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3667539278/">从零开始搭建自己的博客天地(上)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1297890910/">使用BeautifulSoup和pdfkit爬取菜鸟教程到pdf文件!</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1533523788/">Python3入门学习—02条件循环语句</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/58933767/">Python3入门学习—01环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3412983070/">Node安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2220897336/">Git 中级用户的25个提示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1500121752/">控制台，终端，tty，shell等概念的区别</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3490671754/">如何编写高质量的程序</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/417703024/">Markdown学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1191879354/">Android NDK学习入门教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4243991381/">基于GIS的团队管理系统的简介</a></li></ul>
+    <script src="/js/jjquery.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+	<script>
+		(function(){
+		    var bp = document.createElement('script');
+		    var curProtocol = window.location.protocol.split(':')[0];
+		    if (curProtocol === 'https') {
+		        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+		    }
+		    else {
+		        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		    }
+		    var s = document.getElementsByTagName("script")[0];
+		    s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+    <div class="outer">
+        <div id="visit">
+            <div class="footer-left">
+                &copy; 2019 ibrucekong
+            </div>
+            <div class="footer-center">
+				<span id="span_dt_dt"></span>
+            </div>
+            <div class="footer-right">
+                <span style="cursor:url('/mouse/hand.cur'),auto;" title="https://hexo.io"><a href="https://hexo.io" target="_blank">Hexo </a></span><span>Theme By </span><span style="cursor:url('/mouse/hand.cur'),auto;" title="maochunguang"><a href="https://github.com/maochunguang/black-blue" target="_blank">maochunguang</a></span>
+            </div>
+            <!--<div id="jbgsn" class="footer-right" style="cursor:url('./mouse/hand.cur'),auto;display: none;">
+            	<span  style="cursor:url('./mouse/hand.cur'),auto;" title="Love Story">Love Story</span>
+            </div>-->
+        </div>
+    </div>
+</footer>
+<script language="javascript">
+	function show_date_time(){
+		window.setTimeout("show_date_time()", 1000);
+		BirthDay=new Date("3/25/1990 08:00:00");//这个日期是可以修改的
+		today=new Date();
+		timeold=(today.getTime()-BirthDay.getTime());//其实仅仅改了这里
+		sectimeold=timeold/1000
+		secondsold=Math.floor(sectimeold);
+		msPerDay=24*60*60*1000
+		e_daysold=timeold/msPerDay
+		daysold=Math.floor(e_daysold);
+		e_hrsold=(e_daysold-daysold)*24;
+		hrsold=Math.floor(e_hrsold);
+		e_minsold=(e_hrsold-hrsold)*60;
+		minsold=Math.floor((e_hrsold-hrsold)*60);
+		seconds=Math.floor((e_minsold-minsold)*60);
+		span_dt_dt.innerHTML="博主已悄悄呼吸了"+daysold+"天"+hrsold+"小时"+minsold+"分"+seconds+"秒";
+	}
+	show_date_time();
+//	$("#jbgsn").click(function(e){
+//		self.location.href="/love-story.html";
+//	});
+</script>
+    </div>
+    <script src="/js/jjquery.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundimg = "url(/img/bg-left.jpg)";
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "https://hm.baidu.com/hm.js?1c15451748af3d908f1a66a51c683af5";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<!--<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>-->
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>
