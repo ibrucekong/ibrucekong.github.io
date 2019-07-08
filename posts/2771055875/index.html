@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  <meta name="baidu-site-verification" content="L6Lm9d5Crl">
+  
+  
+  
+  
+  <title>ArcGIS API for JavaScript 4.2学习笔记[14] 弹窗的位置、为弹窗添加元素 | ibrucekong</title>
+  <meta name="keywords" content="ibrucekong,Bruce Kong,Bruce">
+  <meta name="description" content="一个坚持在Code上的少年，就算前面是风雨，也会努力拼搏，迎接彩虹！">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta baidu-gxt-verify-token="d38209b74c2782fdf74a2140c3c46e3b">
+  <meta name="description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta name="keywords" content="ArcGIS,WebGIS,AJS,AAJ4.2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ArcGIS API for JavaScript 4.2学习笔记[14] 弹窗的位置、为弹窗添加元素">
+<meta property="og:url" content="https://ibrucekong.github.io/posts/2771055875/index.html">
+<meta property="og:site_name" content="ibrucekong">
+<meta property="og:description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170215193421972-362473212.png">
+<meta property="og:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170215193851035-75659415.png">
+<meta property="og:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170215194126879-1417670875.png">
+<meta property="og:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170215200804957-1728803372.png">
+<meta property="og:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170215202742269-2049393005.png">
+<meta property="og:image" content="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png">
+<meta property="og:updated_time" content="2019-05-11T09:53:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ArcGIS API for JavaScript 4.2学习笔记[14] 弹窗的位置、为弹窗添加元素">
+<meta name="twitter:description" content="ArcGIS API for JavaScript 4.x：从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。">
+<meta name="twitter:image" content="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170215193421972-362473212.png">
+  
+    <link rel="alternative" href="/atom.xml" title="ibrucekong" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/img/favicon.png">
+  
+  
+  <link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.5.0/animate.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/font-awesome/css/font-awesome.min.css">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  
+  
+      <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  
+  <!-- 加载特效 -->
+    <script src="/js/pace.js"></script>
+    <script src="/js/love.js"></script>
+    <link href="/css/pace/pace-theme-flash.css" rel="stylesheet">
+    
+  <script>
+      var yiliaConfig = {
+          fancybox: true,
+          animate: true,
+          isHome: false,
+          isPost: true,
+          isArchive: false,
+          isTag: false,
+          isCategory: false,
+          open_in_new: false
+      }
+      console.log("Welcome to Bruce's world!——欢迎来到Bruce的世界！");
+      console.log("主页请访问：http://ibrucekong.github.io");
+  </script>
+  <script type="hidden" src="https://s4.cnzz.com/z_stat.php?id=1256273509&web_id=1256273509" language="JavaScript"></script>
+  <style>
+		body{
+			cursor:url('/mouse/arrow.cur'),auto;
+		}
+		a{
+			cursor: url('/mouse/hand.cur'),auto;
+		}
+	</style>
+</head></html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <script src="/js/jjquery.js"></script>
+        <a href="/" class="profilepic">
+            
+            <img lazy-src="/img/avatar.png" class="js-avatar">
+            
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">ibrucekong</a></h1>
+        </hgroup>
+        
+        <p class="header-subtitle">JUST DO IT</p>
+        
+        
+            <form>
+                <input type="text" class="st-default-search-input search" id="local-search-input" placeholder=" Search...">
+            </form>
+            <div id="local-search-result"></div>
+        
+        
+            <script type="text/javascript">
+                (function() {
+                    'use strict';
+                    function getMatchData(keyword, data) {
+                        var matchData = [];
+                        for(var i =0;i<data.length;i++){
+                            if(data[i].title.toLowerCase().indexOf(keyword)>=0) 
+                                matchData.push(data[i])
+                        }
+                        return matchData;
+                    }
+                    var $input = $('#local-search-input');
+                    var $resultContent = $('#local-search-result');
+                    $input.keyup(function(){
+                        $.ajax({
+                            url: '/search.json',
+                            dataType: "json",
+                            success: function( json ) {
+                                var str='<ul class=\"search-result-list\">';                
+                                var keyword = $input.val().trim().toLowerCase();
+                                $resultContent.innerHTML = "";
+                                if ($input.val().trim().length <= 0) {
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                }
+                                var results = getMatchData(keyword, json);
+                                if(results.length === 0){
+                                    $resultContent.empty();
+                                    $('#switch-area').show();
+                                    return;
+                                } 
+                                for(var i =0; i<results.length; i++){
+                                    str += "<li><a href='"+ results[i].url +"' class='search-result-title'>"+ results[i].title +"</a></li>";
+                                }
+                                str += "</ul>";
+                                $resultContent.empty();
+                                $resultContent.append(str);
+                                $('#switch-area').hide();
+                            }
+                        });
+                    });
+                })();
+            </script>
+        
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                    </ul>
+                </div>
+            </div>
+        
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/archives/index.html">所有文章</a></li>
+                        
+                            <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                        
+                            <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                        
+                            <li><a href="/categories/tips/index.html">学习心得</a></li>
+                        
+                            <li><a href="/about/index.html">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fl mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                            
+                                <a class="fl github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                            
+                                <a class="fl weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                            
+                                <a class="fl rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <a href="/tags/3D-Map/" style="font-size: 10px;">3D Map</a> <a href="/tags/AAJ4-2/" style="font-size: 16.67px;">AAJ4.2</a> <a href="/tags/AJS/" style="font-size: 20px;">AJS</a> <a href="/tags/Android/" style="font-size: 13.33px;">Android</a> <a href="/tags/ArcGIS/" style="font-size: 20px;">ArcGIS</a> <a href="/tags/ArcGIS-API-for-Javascript-4-2/" style="font-size: 18.33px;">ArcGIS API for Javascript 4.2</a> <a href="/tags/BIM/" style="font-size: 11.67px;">BIM</a> <a href="/tags/BIMserver/" style="font-size: 11.67px;">BIMserver</a> <a href="/tags/BeautifulSoup/" style="font-size: 10px;">BeautifulSoup</a> <a href="/tags/Blog/" style="font-size: 11.67px;">Blog</a> <a href="/tags/Cesium/" style="font-size: 10px;">Cesium</a> <a href="/tags/Chrome/" style="font-size: 11.67px;">Chrome</a> <a href="/tags/Docker/" style="font-size: 11.67px;">Docker</a> <a href="/tags/Event/" style="font-size: 10px;">Event</a> <a href="/tags/GIS/" style="font-size: 11.67px;">GIS</a> <a href="/tags/Git/" style="font-size: 10px;">Git</a> <a href="/tags/Hexo/" style="font-size: 11.67px;">Hexo</a> <a href="/tags/IE/" style="font-size: 10px;">IE</a> <a href="/tags/Ionic/" style="font-size: 11.67px;">Ionic</a> <a href="/tags/JavasScript/" style="font-size: 10px;">JavasScript</a> <a href="/tags/Linux/" style="font-size: 11.67px;">Linux</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/NDK/" style="font-size: 10px;">NDK</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/Node/" style="font-size: 10px;">Node</a> <a href="/tags/OpenSSL/" style="font-size: 10px;">OpenSSL</a> <a href="/tags/Pdfkit/" style="font-size: 10px;">Pdfkit</a> <a href="/tags/Python3/" style="font-size: 13.33px;">Python3</a> <a href="/tags/Route/" style="font-size: 10px;">Route</a> <a href="/tags/SCP/" style="font-size: 10px;">SCP</a> <a href="/tags/WebGIS/" style="font-size: 20px;">WebGIS</a> <a href="/tags/git/" style="font-size: 11.67px;">git</a> <a href="/tags/中秋/" style="font-size: 10px;">中秋</a> <a href="/tags/事件监听/" style="font-size: 10px;">事件监听</a> <a href="/tags/代理/" style="font-size: 11.67px;">代理</a> <a href="/tags/公路车/" style="font-size: 10px;">公路车</a> <a href="/tags/写作/" style="font-size: 10px;">写作</a> <a href="/tags/吾爱破解/" style="font-size: 15px;">吾爱破解</a> <a href="/tags/心得/" style="font-size: 11.67px;">心得</a> <a href="/tags/控制台/" style="font-size: 10px;">控制台</a> <a href="/tags/活动/" style="font-size: 15px;">活动</a> <a href="/tags/济南/" style="font-size: 10px;">济南</a> <a href="/tags/点击事件/" style="font-size: 10px;">点击事件</a> <a href="/tags/爬虫/" style="font-size: 10px;">爬虫</a> <a href="/tags/版本管理/" style="font-size: 11.67px;">版本管理</a> <a href="/tags/百度地图/" style="font-size: 10px;">百度地图</a> <a href="/tags/终端/" style="font-size: 13.33px;">终端</a> <a href="/tags/编程语言/" style="font-size: 11.67px;">编程语言</a> <a href="/tags/自行车/" style="font-size: 10px;">自行车</a> <a href="/tags/请回答1988/" style="font-size: 10px;">请回答1988</a> <a href="/tags/调试/" style="font-size: 10px;">调试</a> <a href="/tags/跳转/" style="font-size: 10px;">跳转</a> <a href="/tags/韩剧/" style="font-size: 10px;">韩剧</a>
+                    </div>
+                </section>
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://weibo.com/kongbin1246053598de">新浪</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://www.jianshu.com/users/4bd3b777695a/timeline">简书</a>
+                    
+                      <a target="_blank" class="main-nav-link switch-friends-link" href="https://blog.brucekong.com">博客</a>
+                    
+                    </div>
+                </section>
+                
+                
+            </div>
+        </div>
+    </header>
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">ibrucekong</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                
+                    <img lazy-src="/img/avatar.png" class="js-avatar">
+                
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">ibrucekong</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">JUST DO IT</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/archives/index.html">所有文章</a></li>
+                
+                    <li><a href="/categories/languages/index.html">计算机语言</a></li>
+                
+                    <li><a href="/categories/tools/index.html">玩转开发工具</a></li>
+                
+                    <li><a href="/categories/tips/index.html">学习心得</a></li>
+                
+                    <li><a href="/about/index.html">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                <div class="social">
+                    
+                        <a class="mail" target="_blank" href="mailto:kongbin0325@hotmail.com" title="mail">mail</a>
+                    
+                        <a class="github" target="_blank" href="https://github.com/ibrucekong" title="github">github</a>
+                    
+                        <a class="weibo" target="_blank" href="https://weibo.com/kongbin1246053598de/home" title="weibo">weibo</a>
+                    
+                        <a class="rss" target="_blank" href="/atom.xml" title="rss">rss</a>
+                    
+                </div>
+            </nav>
+        </header>                
+    </div>
+</nav>
+      <div class="body-wrap"><article id="post-ArcGIS API for JavaScript 4.2 Tutorial 15" class="article article-type-post" itemscope="" itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/posts/2771055875/" class="article-date">
+      <time datetime="2019-05-19T09:53:31.000Z" itemprop="datePublished">2019-05-19</time>
+</a>
+
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ArcGIS API for JavaScript 4.2学习笔记[14] 弹窗的位置、为弹窗添加元素
+    </h1>
+  
+
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/ArcGIS-API-for-JavaScript-4-x/">ArcGIS API for JavaScript 4.x</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AAJ4-2/">AAJ4.2</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AJS/">AJS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ArcGIS/">ArcGIS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/WebGIS/">WebGIS</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <p><strong>ArcGIS API for JavaScript 4.x：</strong><br>从3.x版本升级到4.x，变化比较大，学习、开发体验也会不一样。</p>
+<a id="more"></a>
+<p>本系列是转载至博客园原创作者-<a href="https://home.cnblogs.com/u/onsummer/" target="_blank" rel="noopener">秋意正寒</a>-致敬!</p>
+<p><strong>原地址：<a href="https://www.cnblogs.com/onsummer/p/6399651.html" target="_blank" rel="noopener">https://www.cnblogs.com/onsummer/p/6399651.html</a></strong></p>
+<hr>
+<p>这一节我们来看看弹窗的位置和弹窗上能放什么。</p>
+<p>先一句话总结：</p>
+<p>位置：可以随便（点击时出现或者一直固定在某个位置），也可以指定位置</p>
+<p>能放什么：四种，文字、媒体（图片等）、表格、附件。</p>
+<hr>
+<p>【Part I 位置】</p>
+<p>这一例子和下一个例子中，CDN的引用多了一行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;link rel=&quot;stylesheet&quot; href=&quot;https://js.arcgis.com/4.2/esri/css/main.css&quot;&gt;</span><br><span class="line">&lt;link rel=&quot;stylesheet&quot; href=&quot;https://js.arcgis.com/4.2/dijit/themes/claro/claro.css&quot;&gt;</span><br><span class="line">&lt;script src=&quot;https://js.arcgis.com/4.2/&quot;&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>我也不知道多出来这个claro.css是干嘛的，不过还是注意的好。</p>
+<p>这个例子官方给的很复杂，尽管实现上很简单。从html代码开始看看吧！</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"viewDiv"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"docking-control"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">"dockPositionControl"</span>&gt;</span>Popup Dock Position<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"dockPositionControl"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">selected</span> <span class="attr">value</span>=<span class="string">"auto"</span>&gt;</span>Auto<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"top-left"</span>&gt;</span>Top Left<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"top-center"</span>&gt;</span>Top Center<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"top-right"</span>&gt;</span>Top Right<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"bottom-left"</span>&gt;</span>Bottom Left<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"bottom-center"</span>&gt;</span>Bottom Center<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"bottom-right"</span>&gt;</span>Bottom Right<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>可以看到有一个select选择表单，内含7个可选项，第一个被定义为默认选中的项目。每个option标签的value对应PopupTemplate的position的值。</p>
+<p>引用</p>
+<p>照常，给出引用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">require</span>(</span><br><span class="line">    [</span><br><span class="line">        <span class="string">"esri/Map"</span>,<span class="string">"esri/views/MapView"</span>,<span class="string">"esri/WebMap"</span>,</span><br><span class="line">        <span class="string">"dojo/dom"</span>, <span class="string">"dojo/on"</span>, <span class="string">"dojo/domReady!"</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="function"><span class="keyword">function</span>(<span class="params">Map,MapView,WebMap,dom,on</span>)</span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>好的，没有疑问。下一个。</p>
+<p>函数参数骨架</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span>(<span class="params">Map,MapView,WebMap,dom,on</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> webmap = <span class="keyword">new</span> WebMap(&#123;...&#125;);</span><br><span class="line">    <span class="keyword">var</span> view = <span class="keyword">new</span> MapView(&#123;...&#125;);</span><br><span class="line">    popup = view.popup;</span><br><span class="line">    view.then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;...&#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>好的，没有疑问，下——好吧，有疑问，这个popup是什么？就是view实例化后的内置默认弹窗对象啊！（看我上一篇随笔）</p>
+<p>——既然说到这个就贴多一部分代码。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> view = <span class="keyword">new</span> MapView(&#123;</span><br><span class="line">  map: webmap,</span><br><span class="line">  popup: &#123;</span><br><span class="line">    dockEnabled: <span class="literal">true</span>,</span><br><span class="line">    dockOptions: &#123;</span><br><span class="line">      buttonEnabled: <span class="literal">false</span>,</span><br><span class="line">      breakpoint: <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  container: <span class="string">"viewDiv"</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>对，就是MapView的实例化代码。</p>
+<p>其他的地方没什么不同，就popup这个不同，与上一节方法略微不同，上一节说的是先声明一个匿名对象，而这里直接把匿名对象在构造函数里写上了。</p>
+<p>dockEnabled就是是否能停靠在页面旁边。</p>
+<p>dockOptions是Object类型，这里写了buttonEnabled和breakpoint两个属性。意义分别为“停靠按钮是否隐藏”、“是否在点击的地方显示”（后一个参数不确定是什么意思，我猜的，英文水平不是很好哈哈）</p>
+<p>view.then()这个方法见我第七篇随笔。</p>
+<p>总之，数据（用的是WebMap）和视图都准备好后，就要在then()方法里设置相关的操作了。</p>
+<p>then()方法回调函数</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">view.then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> centerPoint = view.center.clone();</span><br><span class="line"></span><br><span class="line">    popup.open(&#123;&#125;);</span><br><span class="line">    popup.watch(<span class="string">"currentDockPosition"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">value</span>)</span>&#123;...&#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> selectNode = dom.byId(<span class="string">"dockPositionControl"</span>);</span><br><span class="line">    on(selectNode,<span class="string">"change"</span>,funcion(e)&#123;&#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>整体大概是上面的样子。</p>
+<p>解读如下：</p>
+<p>首先，获取view的中央位置。</p>
+<p>然后，打开view的默认弹窗。</p>
+<p>之后，默认弹窗监听自己的currentDockPosition属性，如果currentDockPosition属性发生更改，就重新打开一次弹窗。</p>
+<p>最后获取下拉可选框里的值，把popup的position属性更改。</p>
+<p>——————</p>
+<p>是不是很乱？</p>
+<p>我也觉得很乱。</p>
+<p>实际在页面操作的结果如下：</p>
+<p>刚打开的页面是这样的：</p>
+<p><img src="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170215193421972-362473212.png" alt="img"></p>
+<p>中间的下拉框选择控件是html组织的，并不是AJS的widget；右上角是“buttonEnabled: false,breakpoint: false”+默认position的结果。</p>
+<p>当我切换中间下拉框的选项时，如：</p>
+<p><img src="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170215193851035-75659415.png" alt="img"></p>
+<p>默认的弹窗的位置就发生了变化。这里，是触发了上面代码中“on(selectNode,”change”,function(e){…});”这段代码。</p>
+<p>而点击视图任意位置时，如：</p>
+<p><img src="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170215194126879-1417670875.png" alt="img"></p>
+<p>view的弹窗的内容（content）就发生了变化（至于popup的content属性是怎么更改的，不知道，代码里没有，可能是WebMap的特殊性吧）</p>
+<p>好了，官方绕了这么大一圈就是想说：</p>
+<p>要想改popup的位置，只需更改dockOptions这个属性下的position属性即可。</p>
+<p>目前只支持上下×左中右配对的6个位置。</p>
+<p>所以各位看官看到这里知道原理就行啦，给出on(selectNode,”change”,function(e){…});这段完整的代码，就更加清晰了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">on(selectNode, <span class="string">"change"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span><br><span class="line">  popup.set(<span class="string">"dockOptions"</span>, &#123;</span><br><span class="line">    breakpoint: <span class="literal">false</span>,</span><br><span class="line">    buttonEnabled: <span class="literal">false</span>,</span><br><span class="line">    position: e.target.value</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>源代码也给完：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"initial-scale=1,maximum-scale=1,user-scalable=no"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>Dock Positions with Popup - 4.2<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="undefined">    html,</span></span><br><span class="line"><span class="undefined">    body,</span></span><br><span class="line"><span class="undefined">    #viewDiv &#123;</span></span><br><span class="line"><span class="undefined">      padding: 0;</span></span><br><span class="line"><span class="undefined">      margin: 0;</span></span><br><span class="line"><span class="undefined">      height: 100%;</span></span><br><span class="line"><span class="undefined">      width: 100%;</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">    </span></span><br><span class="line"><span class="undefined">    .docking-control &#123;</span></span><br><span class="line"><span class="undefined">      font-family: "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;</span></span><br><span class="line"><span class="undefined">      position: absolute;</span></span><br><span class="line"><span class="undefined">      z-index: 10;</span></span><br><span class="line"><span class="undefined">      top: 50%;</span></span><br><span class="line"><span class="undefined">      left: 50%;</span></span><br><span class="line"><span class="undefined">      width: 250px;</span></span><br><span class="line"><span class="undefined">      height: 80px;</span></span><br><span class="line"><span class="undefined">      padding: 10px;</span></span><br><span class="line"><span class="undefined">      box-sizing: border-box;</span></span><br><span class="line"><span class="undefined">      margin: -40px 0 0 -125px;</span></span><br><span class="line"><span class="undefined">      background-color: #fff;</span></span><br><span class="line"><span class="undefined">      color: #323232;</span></span><br><span class="line"><span class="undefined">      text-align: center;</span></span><br><span class="line"><span class="undefined">      -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);</span></span><br><span class="line"><span class="undefined">      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">    </span></span><br><span class="line"><span class="undefined">    .docking-control label &#123;</span></span><br><span class="line"><span class="undefined">      display: inline-block;</span></span><br><span class="line"><span class="undefined">      font-weight: bold;</span></span><br><span class="line"><span class="undefined">      margin: 0 0 10px 0;</span></span><br><span class="line"><span class="undefined">      padding: 0;</span></span><br><span class="line"><span class="undefined">      font-size: 16px;</span></span><br><span class="line"><span class="undefined">    &#125;</span></span><br><span class="line"><span class="undefined">  </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"https://js.arcgis.com/4.2/dijit/themes/claro/claro.css"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"https://js.arcgis.com/4.2/esri/css/main.css"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://js.arcgis.com/4.2/"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">    <span class="built_in">require</span>([</span></span><br><span class="line"><span class="javascript">      <span class="string">"esri/Map"</span>,</span></span><br><span class="line"><span class="javascript">      <span class="string">"esri/views/MapView"</span>,</span></span><br><span class="line"><span class="javascript">      <span class="string">"esri/WebMap"</span>,</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="javascript">      <span class="string">"dojo/dom"</span>,</span></span><br><span class="line"><span class="javascript">      <span class="string">"dojo/on"</span>,</span></span><br><span class="line"><span class="javascript">      <span class="string">"dojo/domReady!"</span></span></span><br><span class="line"><span class="javascript">    ], <span class="function"><span class="keyword">function</span> (<span class="params"></span></span></span></span><br><span class="line"><span class="javascript">      <span class="built_in">Map</span>, MapView, WebMap,</span></span><br><span class="line"><span class="undefined">      dom, on</span></span><br><span class="line"><span class="undefined">    ) &#123;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> webmap = <span class="keyword">new</span> WebMap(&#123;</span></span><br><span class="line"><span class="javascript">          portalItem: &#123; <span class="comment">// autocasts as new PortalItem()</span></span></span><br><span class="line"><span class="javascript">            id: <span class="string">"3af548bac6054938b615d08104197ba0"</span></span></span><br><span class="line"><span class="undefined">          &#125;</span></span><br><span class="line"><span class="undefined">        &#125;);</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> view = <span class="keyword">new</span> MapView(&#123;</span></span><br><span class="line"><span class="undefined">          map: webmap,</span></span><br><span class="line"><span class="undefined">          popup: &#123;</span></span><br><span class="line"><span class="javascript">            dockEnabled: <span class="literal">true</span>,</span></span><br><span class="line"><span class="undefined">            dockOptions: &#123;</span></span><br><span class="line"><span class="javascript">              <span class="comment">// Disables the dock button from the popup</span></span></span><br><span class="line"><span class="javascript">              buttonEnabled: <span class="literal">false</span>,</span></span><br><span class="line"><span class="javascript">              <span class="comment">// Ignore the default sizes that trigger responsive docking</span></span></span><br><span class="line"><span class="javascript">              breakpoint: <span class="literal">false</span>,</span></span><br><span class="line"><span class="undefined">            &#125;</span></span><br><span class="line"><span class="undefined">          &#125;,</span></span><br><span class="line"><span class="javascript">          container: <span class="string">"viewDiv"</span></span></span><br><span class="line"><span class="undefined">        &#125;);</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined">        popup = view.popup;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="javascript">        view.then(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="javascript">          <span class="keyword">var</span> centerPoint = view.center.clone();</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined">          popup.open(&#123;</span></span><br><span class="line"><span class="javascript">            title: <span class="string">"Popup dock positions"</span>,</span></span><br><span class="line"><span class="undefined">            location: centerPoint,</span></span><br><span class="line"><span class="javascript">            content: <span class="string">"Use the control in the center of the map to change the location where the popup will dock."</span></span></span><br><span class="line"><span class="undefined">          &#125;);</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="javascript">          <span class="comment">// Watch currentDockPosition of the popup and open the </span></span></span><br><span class="line"><span class="javascript">          <span class="comment">// popup at the at position. </span></span></span><br><span class="line"><span class="javascript">          popup.watch(<span class="string">"currentDockPosition"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span></span><br><span class="line"><span class="undefined">            popup.open();</span></span><br><span class="line"><span class="undefined">          &#125;);</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="javascript">          <span class="keyword">var</span> selectNode = dom.byId(<span class="string">"dockPositionControl"</span>);</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="javascript">          <span class="comment">// Let user change the position dockOptions.position property of the </span></span></span><br><span class="line"><span class="javascript">          <span class="comment">// popup at runtime from the drop-down list. </span></span></span><br><span class="line"><span class="javascript">          on(selectNode, <span class="string">"change"</span>, <span class="function"><span class="keyword">function</span> (<span class="params">e</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            popup.set(<span class="string">"dockOptions"</span>, &#123;</span></span><br><span class="line"><span class="javascript">              breakpoint: <span class="literal">false</span>,</span></span><br><span class="line"><span class="javascript">              buttonEnabled: <span class="literal">false</span>,</span></span><br><span class="line"><span class="undefined">              position: e.target.value</span></span><br><span class="line"><span class="undefined">            &#125;);</span></span><br><span class="line"><span class="undefined">          &#125;)</span></span><br><span class="line"><span class="undefined"></span></span><br><span class="line"><span class="undefined">        &#125;);</span></span><br><span class="line"><span class="undefined">      &#125;);</span></span><br><span class="line"><span class="undefined">  </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"viewDiv"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"docking-control"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">"dockPositionControl"</span>&gt;</span>Popup Dock Position<span class="tag">&lt;/<span class="name">label</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">"dockPositionControl"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">selected</span> <span class="attr">value</span>=<span class="string">"auto"</span>&gt;</span>Auto<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"top-left"</span>&gt;</span>Top Left<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"top-center"</span>&gt;</span>Top Center<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"top-right"</span>&gt;</span>Top Right<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"bottom-left"</span>&gt;</span>Bottom Left<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"bottom-center"</span>&gt;</span>Bottom Center<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">option</span> <span class="attr">value</span>=<span class="string">"bottom-right"</span>&gt;</span>Bottom Right<span class="tag">&lt;/<span class="name">option</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>记住记住关键是popup.dockOptions的position属性即可（规定好的6种）！ </p>
+<hr>
+<p>【Part II 能放什么】</p>
+<p>这个例子数据又切换回了Map而不是上面的WebMap。</p>
+<p>这个例子用的是PopupTemplate而不是Popup，所以数据用了featureLayer。</p>
+<p>所以，给出预览图：</p>
+<p><img src="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170215200804957-1728803372.png" alt="img"></p>
+<p>哇！弹出窗的内容丰富了有木有！</p>
+<p>其实就是Popup的content的内容可以定制而已！（上一篇已经着重说过，PopupTemplate这个类的content和Popup的类有点不同，PopupTemplate这个类的content可以是string，也可以是Object[]。</p>
+<p>这就有意思了，Object类型的数组就可以指定很多东西给它。</p>
+<p>给出featureLayer的声明骨架代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> featureLayer = <span class="keyword">new</span> FeatureLayer(&#123;</span><br><span class="line">    url: <span class="string">"..."</span>,</span><br><span class="line">    popupTemplate: &#123;</span><br><span class="line">        title: <span class="string">"..."</span></span><br><span class="line">        content: [&#123;...&#125;,&#123;...&#125;,&#123;...&#125;,&#123;...&#125;]</span><br><span class="line">    &#125;,</span><br><span class="line">    outFields: [<span class="string">"*"</span>]</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>可以看到content是Object[]类型的了，具体代码是：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">content: [</span><br><span class="line">&#123;</span><br><span class="line">    type: <span class="string">"fields"</span>,</span><br><span class="line">    fieldInfos: [</span><br><span class="line">    &#123;</span><br><span class="line">        fieldName: <span class="string">"Point_Count"</span>,</span><br><span class="line">        visible: <span class="literal">false</span>,</span><br><span class="line">        label: <span class="string">"Count of Points"</span>,</span><br><span class="line">        format: </span><br><span class="line">        &#123;</span><br><span class="line">          places: <span class="number">0</span>,</span><br><span class="line">          digitSeparator: <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, </span><br><span class="line">    &#123;</span><br><span class="line">        fieldName: <span class="string">"relationships/0/Point_Count_COMMON"</span>,</span><br><span class="line">        visible: <span class="literal">true</span>,</span><br><span class="line">        label: <span class="string">"Sum of species tree count"</span>,</span><br><span class="line">        format: </span><br><span class="line">        &#123;</span><br><span class="line">          places: <span class="number">0</span>,</span><br><span class="line">          digitSeparator: <span class="literal">true</span></span><br><span class="line">        &#125;,</span><br><span class="line">        statisticType: <span class="string">"sum"</span></span><br><span class="line">    &#125;, </span><br><span class="line">    &#123;</span><br><span class="line">        fieldName: <span class="string">"relationships/0/COMMON"</span>,</span><br><span class="line">        visible: <span class="literal">false</span>,</span><br><span class="line">        label: <span class="string">"Common Name"</span></span><br><span class="line">    &#125;, </span><br><span class="line">    &#123;</span><br><span class="line">        fieldName: <span class="string">"BLOCKCE10"</span>,</span><br><span class="line">        visible: <span class="literal">true</span>,</span><br><span class="line">        label: <span class="string">"Block"</span></span><br><span class="line">    &#125;]</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">    type: <span class="string">"text"</span>,</span><br><span class="line">    text: <span class="string">"There are &#123;Point_Count&#125; trees within census block &#123;BLOCKCE10&#125;"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">    type: <span class="string">"media"</span>,</span><br><span class="line">    mediaInfos: [</span><br><span class="line">    &#123;</span><br><span class="line">        title: <span class="string">"&lt;b&gt;Count by type&lt;/b&gt;"</span>,</span><br><span class="line">        type: <span class="string">"pie-chart"</span>,</span><br><span class="line">        caption: <span class="string">""</span>,</span><br><span class="line">        value:</span><br><span class="line">        &#123;</span><br><span class="line">          theme: <span class="string">"Grasshopper"</span>,</span><br><span class="line">          fields: [<span class="string">"relationships/0/Point_Count_COMMON"</span>],</span><br><span class="line">          normalizeField: <span class="literal">null</span>,</span><br><span class="line">          tooltipField: <span class="string">"relationships/0/COMMON"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, </span><br><span class="line">    &#123;</span><br><span class="line">        title: <span class="string">"&lt;b&gt;Welcome to Beverly Hills&lt;/b&gt;"</span>,</span><br><span class="line">        type: <span class="string">"image"</span>,</span><br><span class="line">        value: </span><br><span class="line">        &#123;</span><br><span class="line">          sourceURL: <span class="string">"https://www.beverlyhills.org/cbhfiles/storage/files/13203374121770673849/122707_039r_final.jpg"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;, </span><br><span class="line">    &#123;</span><br><span class="line">        title: <span class="string">"&lt;b&gt;Palm tree lined street&lt;/b&gt;"</span>,</span><br><span class="line">        type: <span class="string">"image"</span>,</span><br><span class="line">        value: </span><br><span class="line">        &#123;</span><br><span class="line">        sourceURL: <span class="string">"https://cdn.loc.gov/service/pnp/highsm/21600/21679r.jpg"</span></span><br><span class="line">         &#125;</span><br><span class="line">    &#125;]</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">  type: <span class="string">"attachments"</span></span><br><span class="line">&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>一颗很庞大的树，缩起来就成了：</p>
+<p><img src="https://images2015.cnblogs.com/blog/1097074/201702/1097074-20170215202742269-2049393005.png" alt="img"></p>
+<p>四个红框框，看type和对应的信息即可。</p>
+<p>第一个是fields类型的，所以就是fieldInfos，再往下展开设置输出文本的格式等等即可。（表格，数据源自PopupTemplate.fieldInfos属性，如果没有就要先进行设置，本例中featureLayer来源自ESRI的服务器，应该是有的）</p>
+<p>第二个是text，文本类型的，格式在这截图可以看到。</p>
+<p>第三个是media，所以就是mediaInfos，往下还能再分pie-chart（饼图）、image（图片）等等。</p>
+<p>第四个是附着物，就是附件，提供下载功能，如PDF文档。</p>
+<p>media的类型可以是：image | pie-chart | bar-chart | column-chart | line-chart</p>
+<p>再往下就不细看了，需要什么就对应找到PopupTemplate的参考文档即可。下面给出超链接</p>
+<p><a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-PopupTemplate.html" target="_blank" rel="noopener">PopupTemplate</a></p>
+<p>（发文时是4.2，如果有更新请自行寻找4.2的SDK中的API Reference）</p>
+<div style="text-align: center;padding: 0; margin: 0;"><br>    <img class="wechat-qrcode" src="https://coding.net/u/ibrucekong/p/images/git/raw/master/wechat-blog.png" alt="关注公众号"><br></div>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/posts/2771055875/">ArcGIS API for JavaScript 4.2学习笔记[14] 弹窗的位置、为弹窗添加元素</a></p>
+        <p><span>文章作者:</span><a href="/" title="访问 ibrucekong 的个人博客">ibrucekong</a></p>
+        <p><span class="post-count">文章字数:</span>2,318字</p>
+        <p><span class="post-count">阅读时长:</span>11分钟</p>
+        <p><span class="post-count">全站字数:</span>66.0k字</p>
+        <p><span>发布时间:</span>2019年05月19日 - 17时53分</p>
+        <p><span>最后更新:</span>2019年05月11日 - 17时53分</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/posts/2771055875/" title="ArcGIS API for JavaScript 4.2学习笔记[14] 弹窗的位置、为弹窗添加元素">https://ibrucekong.github.io/posts/2771055875/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://ibrucekong.github.io/posts/2771055875/　　作者: ibrucekong" title=""></span>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/cn/" title="中国大陆 (CC BY-NC-SA 3.0 CN)" target="_blank">"署名-非商用-相同方式共享 3.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+<nav id="article-nav">
+  
+    <a href="/posts/2569294447/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          ArcGIS API for JavaScript 4.2学习笔记[15] 弹窗内容的格式与自定义格式
+        
+      </div>
+    </a>
+  
+  
+    <a href="/posts/2427708618/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ArcGIS API for JavaScript 4.2学习笔记[13] Layer的弹窗（PopupTemplate）</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+    <strong class="toc-title">文章目录</strong>
+    
+</div>
+<style>
+    .left-col .switch-btn {
+        display: none;
+    }
+    .left-col .switch-area {
+        display: none;
+    }
+</style>
+<input type="button" id="tocButton" value="隐藏目录" title="点击按钮隐藏或者显示文章目录">
+<script src="/js/jjquery.js"></script>
+<script>
+    var valueHide = "隐藏目录";
+    var valueShow = "显示目录";
+    if ($(".left-col").is(":hidden")) {
+        $("#tocButton").attr("value", valueShow);
+    }
+    $("#tocButton").click(function() {
+        if ($("#toc").is(":hidden")) {
+            $("#tocButton").attr("value", valueHide);
+            $("#toc").slideDown(320);
+            $(".switch-btn, .switch-area").fadeOut(300);
+        }
+        else {
+            $("#tocButton").attr("value", valueShow);
+            $("#toc").slideUp(350);
+            $(".switch-btn, .switch-area").fadeIn(500);
+        }
+    })
+    if ($(".toc").length < 1) {
+        $("#toc, #tocButton").hide();
+        $(".switch-btn, .switch-area").show();
+    }
+</script>
+
+
+
+
+
+
+    
+      <section id="comments" style="margin: 1px 30px;">
+	<!-- 来必力City版安装代码 -->
+	<div id="lv-container" data-id="city" data-uid="MTAyMC8zMDQ1Ny83MDEx" style="padding: 1px 10px;border-radius: 20px;">
+	<script type="text/javascript">
+	   (function(d, s) {
+	       var j, e = d.getElementsByTagName(s)[0];
+
+	       if (typeof LivereTower === 'function') { return; }
+
+	       j = d.createElement(s);
+	       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+	       j.async = true;
+
+	       e.parentNode.insertBefore(j, e);
+	   })(document, 'script');
+	</script>
+	<noscript>为正常使用来必力评论功能请激活JavaScript</noscript>
+	</div>
+	<!-- City版安装代码已完成 -->
+</section>
+
+    
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/posts/2569294447/" title="上一篇: ArcGIS API for JavaScript 4.2学习笔记[15] 弹窗内容的格式与自定义格式">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+        
+            <a href="/posts/2427708618/" title="下一篇: ArcGIS API for JavaScript 4.2学习笔记[13] Layer的弹窗（PopupTemplate）">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/posts/4173973714/">吾爱破解论坛2019年07月21日开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3843056894/">ArcGIS API for JavaScript 4.2学习笔记[17] 官方第七章Searching（空间查询）概览与解释</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2525638783/">ArcGIS API for JavaScript 4.2学习笔记[16] 弹窗自定义功能按钮及为要素自定义按钮（第五章完结）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2569294447/">ArcGIS API for JavaScript 4.2学习笔记[15] 弹窗内容的格式与自定义格式</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2771055875/">ArcGIS API for JavaScript 4.2学习笔记[14] 弹窗的位置、为弹窗添加元素</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2427708618/">ArcGIS API for JavaScript 4.2学习笔记[13] Layer的弹窗（PopupTemplate）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/353147208/">监听事件多次绑定多次触发的解决方案</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3310621046/">ArcGIS API for JavaScript 4.2学习笔记[12] View的弹窗（Popup）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3310621046/">ArcGIS API for JavaScript 4.2学习笔记[12] View的弹窗（Popup）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2760278425/">ArcGIS API for JavaScript 4.2学习笔记[11] 官方第五章Popups（弹窗）概览与解释</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2160033807/">ArcGIS API for JavaScript 4.2学习笔记[10] 2D添加指北针widget、视图保存、视图padding（第二章完结）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3849267338/">ArcGIS API for JavaScript 4.2学习笔记[9] 同一种视图不同数据（Map）同步</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1258689047/">ArcGIS API for JavaScript 4.2学习笔记[8] 2D与3D视图同步</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3118632505/">ArcGIS API for JavaScript 4.2学习笔记[7] 鹰眼（缩略图的实现及异步处理、Promise、回调函数、监听的笔记）</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/929677808/">ArcGIS API for JavaScript 4.2学习笔记[6] goTo()地图动画</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1307306721/">ArcGIS API for JavaScript 4.2学习笔记[5] 官方API大章节概述与内容转译</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/642960823/">ArcGIS API for JavaScript 4.2学习笔记[4] 第二章其余感兴趣的例子</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/814364469/">ArcGIS API for JavaScript 4.2学习笔记[3] 官方第二章Mapping and Views概览与解释</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1049908487/">ArcGIS API for JavaScript 4.2学习笔记[2] 显示3D地图</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/161947747/">ArcGIS API for JavaScript 4.2学习笔记[1] 显示地图</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/962944946/">ArcGIS API for JavaScript 4.2学习笔记[0] AJS4.2概述、新特性、未来产品线计划与AJS笔记目录</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2058601592/">修改Docker下的MySQL密码校验方式</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2392351684/">Docker无法使用vim</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2464790768/">Splice和Slice引发的血案</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/139445933/">再见,我的青春 ——《请回答1988》</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3256505474/">吾爱破解论坛2018年11月11日开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4186109665/">济南的中秋</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3230248873/">BIMserver入门笔记 - 02登录及模型展示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3869274485/">BIMserver入门笔记 - 01环境搭建、数据导入及预览</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1380263657/">前端地图应用中几种监听事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1077207737/">IE和Chrome带有多个参数的互相跳转</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/289005530/">在Chrome中调试Ionic的Android应用</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1652333246/">入坑公路车</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2994729501/">Ionic使用百度地图弹窗并响应点击事件</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2639421812/">吾爱破解论坛2018年7月21日暑假开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3249349784/">在Linux中解决跨网段访问服务</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1224017506/">在Linux中如何使用SCP快速拷贝数据</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3337762157/">从零开始搭建自己的博客天地(下)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2692255794/">使用Nginx和OpenSSL搭建本地HTTPS的ArcGIS for JavaScript 4.6</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/224769818/">吾爱破解论坛2018年3月13日十周年开放注册通知</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/547195145/">Nginx学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3718307484/">Cesium简介与环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3667539278/">从零开始搭建自己的博客天地(上)</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1297890910/">使用BeautifulSoup和pdfkit爬取菜鸟教程到pdf文件!</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1533523788/">Python3入门学习—02条件循环语句</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/58933767/">Python3入门学习—01环境搭建</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3412983070/">Node安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/2220897336/">Git 中级用户的25个提示</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1500121752/">控制台，终端，tty，shell等概念的区别</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3490671754/">如何编写高质量的程序</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/417703024/">Markdown学习入门</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/1191879354/">Android NDK学习入门教程</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/3219987363/">Git安装与配置</a></li><li class="post-list-item"><a class="post-list-link" href="/posts/4243991381/">基于GIS的团队管理系统的简介</a></li></ul>
+    <script src="/js/jjquery.js"></script>
+    <script>
+        $(".post-list").addClass("toc-article");
+        // $(".post-list-item a").attr("target","_blank");
+        $("#post-nav-button > a:nth-child(2)").click(function() {
+            $(".fa-bars, .fa-times").toggle();
+            $(".post-list").toggle(300);
+            if ($(".toc").length > 0) {
+                $("#toc, #tocButton").toggle(200, function() {
+                    if ($(".switch-area").is(":visible")) {
+                        $("#toc, .switch-btn, .switch-area").toggle();
+                        $("#tocButton").attr("value", valueHide);
+                        }
+                    })
+            }
+            else {
+                $(".switch-btn, .switch-area").fadeToggle(300);
+            }
+        })
+    </script>
+
+
+
+
+    <script>
+        
+    </script>
+
+</div>
+      <footer id="footer">
+	<script>
+		(function(){
+		    var bp = document.createElement('script');
+		    var curProtocol = window.location.protocol.split(':')[0];
+		    if (curProtocol === 'https') {
+		        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+		    }
+		    else {
+		        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		    }
+		    var s = document.getElementsByTagName("script")[0];
+		    s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+    <div class="outer">
+        <div id="visit">
+            <div class="footer-left">
+                &copy; 2019 ibrucekong
+            </div>
+            <div class="footer-center">
+				<span id="span_dt_dt"></span>
+            </div>
+            <div class="footer-right">
+                <span style="cursor:url('/mouse/hand.cur'),auto;" title="https://hexo.io"><a href="https://hexo.io" target="_blank">Hexo </a></span><span>Theme By </span><span style="cursor:url('/mouse/hand.cur'),auto;" title="maochunguang"><a href="https://github.com/maochunguang/black-blue" target="_blank">maochunguang</a></span>
+            </div>
+            <!--<div id="jbgsn" class="footer-right" style="cursor:url('./mouse/hand.cur'),auto;display: none;">
+            	<span  style="cursor:url('./mouse/hand.cur'),auto;" title="Love Story">Love Story</span>
+            </div>-->
+        </div>
+    </div>
+</footer>
+<script language="javascript">
+	function show_date_time(){
+		window.setTimeout("show_date_time()", 1000);
+		BirthDay=new Date("3/25/1990 08:00:00");//这个日期是可以修改的
+		today=new Date();
+		timeold=(today.getTime()-BirthDay.getTime());//其实仅仅改了这里
+		sectimeold=timeold/1000
+		secondsold=Math.floor(sectimeold);
+		msPerDay=24*60*60*1000
+		e_daysold=timeold/msPerDay
+		daysold=Math.floor(e_daysold);
+		e_hrsold=(e_daysold-daysold)*24;
+		hrsold=Math.floor(e_hrsold);
+		e_minsold=(e_hrsold-hrsold)*60;
+		minsold=Math.floor((e_hrsold-hrsold)*60);
+		seconds=Math.floor((e_minsold-minsold)*60);
+		span_dt_dt.innerHTML="博主已悄悄呼吸了"+daysold+"天"+hrsold+"小时"+minsold+"分"+seconds+"秒";
+	}
+	show_date_time();
+//	$("#jbgsn").click(function(e){
+//		self.location.href="/love-story.html";
+//	});
+</script>
+    </div>
+    <script src="/js/jjquery.js"></script>
+<script src="/js/main.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var backgroundimg = "url(/img/bg-left.jpg)";
+            $("#mobile-nav").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+            $(".left-col").css({"background-image": backgroundimg,"background-size": "cover","background-position": "center"});
+        })
+    </script>
+
+
+	<script>
+	var _hmt = _hmt || [];
+	(function() {
+	  var hm = document.createElement("script");
+	  hm.src = "https://hm.baidu.com/hm.js?1c15451748af3d908f1a66a51c683af5";
+	  var s = document.getElementsByTagName("script")[0]; 
+	  s.parentNode.insertBefore(hm, s);
+	})();
+	</script>
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    $(document).ready(function() {
+        if ($("#comments").length < 1) {
+            $("#scroll > a:nth-child(2)").hide();
+        };
+    })
+</script>
+
+<!--<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>-->
+
+  <script language="javascript">
+    $(function() {
+        $("a[title]").each(function() {
+            var a = $(this);
+            var title = a.attr('title');
+            if (title == undefined || title == "") return;
+            a.data('title', title).removeAttr('title').hover(
+            function() {
+                var offset = a.offset();
+                $("<div id=\"anchortitlecontainer\"></div>").appendTo($("body")).html(title).css({
+                    top: offset.top - a.outerHeight() - 15,
+                    left: offset.left + a.outerWidth()/2 + 1
+                }).fadeIn(function() {
+                    var pop = $(this);
+                    setTimeout(function() {
+                        pop.remove();
+                    }, pop.text().length * 800);
+                });
+            }, function() {
+                $("#anchortitlecontainer").remove();
+            });
+        });
+    });
+</script>
+
+
+  </div>
+</body>
+</html>
